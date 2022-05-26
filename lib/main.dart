@@ -1,3 +1,4 @@
+import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +14,8 @@ void main(){
   );
   runApp(
     const MaterialApp(
-     home: Login()
+     home: Login(),
+      debugShowCheckedModeBanner: false,
     )
   );
 }
@@ -81,7 +83,11 @@ class _LoginState extends State<Login> {
                           child: Text("Login",
                               style: GoogleFonts.inter(color: Colors.white)
                           ),
-                          onPressed: (){},
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => HomePage()
+                            ));
+                          },
                         ),
                       ),
                     )
