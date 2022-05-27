@@ -1,3 +1,5 @@
+import 'package:cafe_books/screens/homepage/homepage.dart';
+import 'package:cafe_books/screens/items/items.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,69 +20,65 @@ class _CDrawerState extends State<CDrawer> {
         padding: const EdgeInsets.all(0),
         children: [
           Container(
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Colors.blue.shade700
-            ),
-            padding: const EdgeInsets.only(left: 20, right: 25, bottom: 25, top: 35),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.white,
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 3),
-                    child: Icon(FontAwesomeIcons.store),
-                  )
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
+              width: double.maxFinite,
+              decoration: BoxDecoration(color: Colors.blue.shade700),
+              padding: const EdgeInsets.only(
+                  left: 20, right: 25, bottom: 25, top: 35),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 3),
+                        child: Icon(FontAwesomeIcons.store),
+                      )),
+                  Container(
+                    margin: const EdgeInsets.only(left: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
                           "Abhinav Gadekar",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17
+                          style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17),
                         ),
-                      ),
-                      Text(
-                        "abhinavgadekar4529@gmail.com",
-                        style: GoogleFonts.inter(
-                            color: Colors.white,
-                          fontSize: 10
+                        Text(
+                          "abhinavgadekar4529@gmail.com",
+                          style: GoogleFonts.inter(
+                              color: Colors.white, fontSize: 10),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
                                 "User Settings  ",
                                 style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 12
-                                ),
-                            ),
-                            const Icon(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                              const Icon(
                                 FontAwesomeIcons.chevronDown,
                                 size: 13,
                                 color: Colors.white,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            )
-          ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              )),
           TextButton(
-            onPressed: (){},
+            onPressed: () {
+              Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Items()))
+                  .then((value) {});
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -88,26 +86,25 @@ class _CDrawerState extends State<CDrawer> {
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: const Icon(
-                        FontAwesomeIcons.cartShopping,
-                        color: Colors.grey,
-                        size: 20,
-                    )
-                ),
+                      FontAwesomeIcons.cartShopping,
+                      color: Colors.grey,
+                      size: 20,
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
-                        "Items",
+                      "Items",
                       style: GoogleFonts.inter(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
           TextButton(
-            onPressed: (){},
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => HomePage()));
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,23 +115,19 @@ class _CDrawerState extends State<CDrawer> {
                       FontAwesomeIcons.house,
                       color: Colors.grey,
                       size: 20,
-                    )
-                ),
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Home",
                       style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
           TextButton(
-            onPressed: (){},
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -145,23 +138,19 @@ class _CDrawerState extends State<CDrawer> {
                       FontAwesomeIcons.chartSimple,
                       color: Colors.grey,
                       size: 20,
-                    )
-                ),
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Reports",
                       style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
           TextButton(
-            onPressed: (){},
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,23 +161,19 @@ class _CDrawerState extends State<CDrawer> {
                       FontAwesomeIcons.fileContract,
                       color: Colors.grey,
                       size: 20,
-                    )
-                ),
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Sales",
                       style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
           TextButton(
-            onPressed: (){},
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -199,23 +184,19 @@ class _CDrawerState extends State<CDrawer> {
                       FontAwesomeIcons.wallet,
                       color: Colors.grey,
                       size: 20,
-                    )
-                ),
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Expenses",
                       style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
           TextButton(
-            onPressed: (){},
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -226,23 +207,19 @@ class _CDrawerState extends State<CDrawer> {
                       FontAwesomeIcons.peopleGroup,
                       color: Colors.grey,
                       size: 20,
-                    )
-                ),
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Customers",
                       style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
           TextButton(
-            onPressed: (){},
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -253,18 +230,14 @@ class _CDrawerState extends State<CDrawer> {
                       FontAwesomeIcons.kitchenSet,
                       color: Colors.grey,
                       size: 20,
-                    )
-                ),
+                    )),
                 Container(
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Kitchen",
                       style: GoogleFonts.inter(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                      ),
-                    )
-                )
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
           ),
