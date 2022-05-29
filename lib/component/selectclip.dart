@@ -24,7 +24,6 @@ class _Select_ClipState extends State<Select_Clip> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 130,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
             backgroundColor: backgrounColor,

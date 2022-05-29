@@ -1,40 +1,55 @@
-import 'package:cafe_books/component/cmenu.dart';
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/usnackbar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cafe_books/screens/items/items.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:textfield_search/textfield_search.dart';
 
-class AddItem extends StatefulWidget {
-  AddItem({Key? key}) : super(key: key);
+import 'additem.dart';
+
+class ItemEdit extends StatefulWidget {
+  String itemName;
+  String itemPrice;
+  String itemDescription;
+  String itemId;
+  ItemEdit(
+      {Key? key,
+      required this.itemName,
+      required this.itemId,
+      required this.itemDescription,
+      required this.itemPrice})
+      : super(key: key);
 
   @override
-  State<AddItem> createState() => _AddItemState();
+  State<ItemEdit> createState() => _ItemEditState();
 }
 
-final TextEditingController itemNameController = TextEditingController();
-final TextEditingController itemPriceController = TextEditingController();
-final TextEditingController itemDescriptionController = TextEditingController();
-final itemCollectionRef = FirebaseFirestore.instance
-    .collection("book_data")
-    .doc("abhinavgadekar4529@gmail.com")
-    .collection("items");
+final TextEditingController _itemNameController = TextEditingController();
+final TextEditingController _itemPriceController = TextEditingController();
+final TextEditingController _itemDescriptionController =
+    TextEditingController();
 
-class _AddItemState extends State<AddItem> {
+class _ItemEditState extends State<ItemEdit> {
   final units = ["Nos", "Box", "Kg", "Gm"];
   double top = 100;
   double op = 0;
   TextEditingController unitController = TextEditingController();
   Future saveItem() async {
-    itemCollectionRef.doc().set({
-      "itemName": itemNameController.text,
-      "itemPrice": itemPriceController.text,
-      "itemDescription": itemDescriptionController.text,
+    itemCollectionRef.doc(widget.itemId).set({
+      "itemName": _itemNameController.text,
+      "itemPrice": _itemPriceController.text,
+      "itemDescription": _itemDescriptionController.text,
       "itemCreatedDate": DateTime.now()
     });
+  }
+
+  @override
+  void initState() {
+    _itemNameController.text = widget.itemName;
+    _itemPriceController.text = widget.itemPrice;
+    _itemDescriptionController.text = widget.itemDescription;
+    super.initState();
   }
 
   @override
@@ -52,7 +67,7 @@ class _AddItemState extends State<AddItem> {
           },
         ),
         title: Text(
-          "Item Creation",
+          "Item Alteration",
           style: GoogleFonts.inter(
               color: Colors.black, fontWeight: FontWeight.bold),
         ),
@@ -61,12 +76,12 @@ class _AddItemState extends State<AddItem> {
           child: Column(
         children: [
           CTextField(
-            controller: itemNameController,
+            controller: _itemNameController,
             placeholder: "Item Name",
           ),
           CTextField(
             textInputType: TextInputType.number,
-            controller: itemPriceController,
+            controller: _itemPriceController,
             placeholder: "Price",
           ),
           Container(
@@ -88,16 +103,18 @@ class _AddItemState extends State<AddItem> {
                 onPressed: () {
                   saveItem().then((value) {
                     ScaffoldMessenger.of(context).showSnackBar(USnackbar(
-                      message: "Item Created Succesfully",
+                      message: "Item Updated Succesfully",
                       color: const Color(0xff1A659E),
                     ));
                     itemNameController.clear();
                     itemPriceController.clear();
                     itemDescriptionController.clear();
+
+                    Navigator.pop(context);
                   });
                 },
                 child: Text(
-                  "Save",
+                  "Update",
                   style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                 ),
               ),

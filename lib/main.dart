@@ -1,11 +1,15 @@
 import 'package:cafe_books/component/selectclip.dart';
+import 'package:cafe_books/component/usnackbar.dart';
+import 'package:cafe_books/firebase_options.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.transparent,
@@ -70,18 +74,36 @@ class _LoginState extends State<Login> {
                     margin: const EdgeInsets.only(top: 30),
                     child: SizedBox(
                       width: 200,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: const Color(0xff001F54)),
-                        child: Text("Login",
-                            style: GoogleFonts.inter(color: Colors.white)),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()));
-                        },
-                      ),
+                      child: FutureBuilder(
+                          future: Firebase.initializeApp(
+                              options: DefaultFirebaseOptions.currentPlatform),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              print(snapshot.data);
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+
+                            if (snapshot.hasError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  USnackbar(
+                                      message: snapshot.error.toString()));
+                            }
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: const Color(0xff001F54)),
+                              child: Text("Login",
+                                  style:
+                                      GoogleFonts.inter(color: Colors.white)),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HomePage()));
+                              },
+                            );
+                          }),
                     ),
                   )
                 ],
