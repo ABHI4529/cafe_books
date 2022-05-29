@@ -1,3 +1,4 @@
+import 'package:cafe_books/component/selectclip.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -159,7 +160,11 @@ class _LoginState extends State<Login> {
                   )
                 ],
               ),
+<<<<<<< HEAD
             )
+=======
+            ),
+>>>>>>> 753c8caa03086aaa3e9829a8f033d623be64604f
           ],
         ),
       )),
