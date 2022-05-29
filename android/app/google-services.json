@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "334594413897",
+    "project_id": "cafe-books-7cd1a",
+    "storage_bucket": "cafe-books-7cd1a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334594413897:android:719168d2c3710ef68cb698",
+        "android_client_info": {
+          "package_name": "com.rendersoft.cafe_books"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "334594413897-dporpe4p0o01fsai4vvh1sc7lg22nqjj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3NrRpcAS1c5HCJOmqpfxz4H6FyPEG9Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "334594413897-dporpe4p0o01fsai4vvh1sc7lg22nqjj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

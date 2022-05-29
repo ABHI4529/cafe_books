@@ -29,6 +29,9 @@ dependencies:
   google_fonts: ^3.0.1
   font_awesome_flutter: ^10.1.0
   fab_circular_menu: ^1.0.2
+  textfield_search: ^0.10.0
+  firebase_core: ^1.17.1
+  cloud_firestore: ^3.1.17
 
 dev_dependencies:
   flutter_test:

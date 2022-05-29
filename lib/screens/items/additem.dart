@@ -3,6 +3,7 @@ import 'package:cafe_books/component/ctextfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:textfield_search/textfield_search.dart';
 
 class AddItem extends StatefulWidget {
   AddItem({Key? key}) : super(key: key);
@@ -12,8 +13,10 @@ class AddItem extends StatefulWidget {
 }
 
 class _AddItemState extends State<AddItem> {
+  final units = ["Nos", "Box", "Kg", "Gm"];
   double top = 100;
   double op = 0;
+  TextEditingController unitController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,40 +35,24 @@ class _AddItemState extends State<AddItem> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Stack(children: [
-          Column(
+          child: Column(
+        children: [
+          CTextField(
+            placeholder: "Item Name",
+          ),
+          Row(
             children: [
-              CTextField(
-                placeholder: "Item Name",
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Stack(
-                      fit: StackFit.passthrough,
-                      children: [
-                        CTextField(
-                          placeholder: "Unit",
-                        ),
-                        AnimatedContainer(
-                          width: 400,
-                          height: 300,
-                          duration: const Duration(milliseconds: 300),
-                        )
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: CTextField(
-                      placeholder: "Price",
-                    ),
-                  ),
-                ],
+              Container(
+                height: 50,
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [CTextField()],
+                ),
               )
             ],
-          ),
-        ]),
-      ),
+          )
+        ],
+      )),
     );
   }
 }
