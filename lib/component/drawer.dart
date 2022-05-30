@@ -1,9 +1,12 @@
+import 'package:cafe_books/screens/expense/expense.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cafe_books/screens/items/items.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../screens/clients/clients.dart';
 
 class CDrawer extends StatefulWidget {
   const CDrawer({Key? key}) : super(key: key);
@@ -101,32 +104,6 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => HomePage()));
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                    margin: const EdgeInsets.only(left: 30),
-                    child: const Icon(
-                      FontAwesomeIcons.house,
-                      color: Colors.grey,
-                      size: 20,
-                    )),
-                Container(
-                    margin: const EdgeInsets.only(left: 30),
-                    child: Text(
-                      "Home",
-                      style: GoogleFonts.inter(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                    ))
-              ],
-            ),
-          ),
-          TextButton(
             onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -173,7 +150,10 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Expense()));
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -196,7 +176,10 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Clients()));
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,

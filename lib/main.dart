@@ -182,11 +182,7 @@ class _LoginState extends State<Login> {
                   )
                 ],
               ),
-<<<<<<< HEAD
-            )
-=======
             ),
->>>>>>> 753c8caa03086aaa3e9829a8f033d623be64604f
           ],
         ),
       )),

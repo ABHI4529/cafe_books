@@ -31,7 +31,12 @@ dependencies:
   fab_circular_menu: ^1.0.2
   textfield_search: ^0.10.0
   firebase_core: ^1.17.1
+  whatsapp_unilink: ^2.0.1+1
   cloud_firestore: ^3.1.17
+  url_launcher: ^6.1.2
+  cupertino_date_textbox: ^1.0.1
+  intl: ^0.17.0
+  editable: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -6,7 +6,13 @@ class CTextField extends StatelessWidget {
   String? placeholder;
   TextInputType? textInputType;
   TextEditingController? controller;
-  CTextField({Key? key, this.placeholder, this.controller, this.textInputType})
+  Widget? widget;
+  CTextField(
+      {Key? key,
+      this.placeholder,
+      this.controller,
+      this.textInputType,
+      this.widget})
       : super(key: key);
 
   @override
@@ -14,6 +20,7 @@ class CTextField extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       child: CupertinoTextField(
+        suffix: widget,
         keyboardType: textInputType,
         controller: controller,
         padding: const EdgeInsets.all(10),

@@ -113,7 +113,8 @@ class _ItemsState extends State<Items> {
                         );
                       });
                 },
-                shape: const Border(bottom: BorderSide(color: Colors.grey)),
+                shape: const Border(
+                    bottom: BorderSide(color: Colors.grey, width: 0.5)),
                 trailing: Text(
                   "₹  ${snapshot.data?.docs[index]['itemPrice']}",
                   style: GoogleFonts.inter(fontWeight: FontWeight.bold),
