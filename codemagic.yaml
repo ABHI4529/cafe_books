@@ -1,0 +1,5 @@
+workflows:
+  cafe_books:
+    name: probooks
+    scripts:
+      - echo "done"
