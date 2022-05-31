@@ -1,6 +1,7 @@
 workflows:
-  cafe_books:
-  - name: probooks
+  my-workflow:
+    scripts:
+      - name: Add provisioning profiles
         script: |
           set -e # exit on first failed command
 
