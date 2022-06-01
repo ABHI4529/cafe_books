@@ -37,6 +37,9 @@ dependencies:
   cupertino_date_textbox: ^1.0.1
   intl: ^0.17.0
   editable: ^2.0.0
+  firebase_auth: ^3.3.19
+  google_sign_in: ^5.3.2
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:
