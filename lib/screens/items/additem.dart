@@ -1,11 +1,13 @@
 import 'package:cafe_books/component/cmenu.dart';
 import 'package:cafe_books/component/ctextfield.dart';
+import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/component/usnackbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:searchfield/searchfield.dart';
 import 'package:textfield_search/textfield_search.dart';
 
 class AddItem extends StatefulWidget {
@@ -17,6 +19,7 @@ class AddItem extends StatefulWidget {
 
 final TextEditingController itemNameController = TextEditingController();
 final TextEditingController itemPriceController = TextEditingController();
+final TextEditingController itemUnitController = TextEditingController();
 final TextEditingController itemDescriptionController = TextEditingController();
 final itemCollectionRef = FirebaseFirestore.instance
     .collection("book_data")
@@ -32,6 +35,7 @@ class _AddItemState extends State<AddItem> {
     itemCollectionRef.doc().set({
       "itemName": itemNameController.text,
       "itemPrice": itemPriceController.text,
+      "itemUnit": itemUnitController.text,
       "itemDescription": itemDescriptionController.text,
       "itemCreatedDate": DateTime.now()
     });
@@ -64,10 +68,22 @@ class _AddItemState extends State<AddItem> {
             controller: itemNameController,
             placeholder: "Item Name",
           ),
-          CTextField(
-            textInputType: TextInputType.number,
-            controller: itemPriceController,
-            placeholder: "Price",
+          Row(
+            children: [
+              Expanded(
+                  child: DSearchField(
+                controller: itemUnitController,
+                label: "Unit",
+                list: units,
+              )),
+              Expanded(
+                child: CTextField(
+                  textInputType: TextInputType.number,
+                  controller: itemPriceController,
+                  placeholder: "Price",
+                ),
+              ),
+            ],
           ),
           Container(
             height: 100,
@@ -92,6 +108,7 @@ class _AddItemState extends State<AddItem> {
                       color: const Color(0xff1A659E),
                     ));
                     itemNameController.clear();
+                    itemUnitController.clear();
                     itemPriceController.clear();
                     itemDescriptionController.clear();
                   });

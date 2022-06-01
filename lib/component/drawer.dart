@@ -1,6 +1,7 @@
 import 'package:cafe_books/screens/expense/expense.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cafe_books/screens/items/items.dart';
+import 'package:cafe_books/screens/sale/sale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -127,7 +128,10 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Sale()));
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -143,6 +147,29 @@ class _CDrawerState extends State<CDrawer> {
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Sales",
+                      style: GoogleFonts.inter(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    child: const Icon(
+                      FontAwesomeIcons.boxOpen,
+                      color: Colors.grey,
+                      size: 20,
+                    )),
+                Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    child: Text(
+                      "Stock",
                       style: GoogleFonts.inter(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ))

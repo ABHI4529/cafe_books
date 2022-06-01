@@ -1,4 +1,6 @@
 import 'package:cafe_books/component/ctextfield.dart';
+import 'package:cafe_books/component/ditemsearch.dart';
+import 'package:cafe_books/component/dtextfield.dart';
 import 'package:cafe_books/screens/expense/addexpenceitems.dart';
 import 'package:cafe_books/screens/expense/addexpense.dart';
 import 'package:cafe_books/screens/items/additem.dart';
@@ -9,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
+import 'package:searchfield/searchfield.dart';
+import 'package:textfield_search/textfield_search.dart';
 
 import '../../datautil/expensedatavoucher.dart';
 
@@ -20,9 +25,11 @@ class ExpenseVoucer extends StatefulWidget {
 }
 
 List<ExpenseItems> expenseVoucherList = [];
-final expenseQuantity = TextEditingController(text: "1");
+final expenseQuantity = TextEditingController();
 final expensePrice = TextEditingController();
+final expenseAmount = TextEditingController();
 final expenseDescription = TextEditingController();
+List<double> total = [];
 
 class _ExpenseVoucerState extends State<ExpenseVoucer> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
@@ -33,6 +40,23 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
     voucherDate = dateformat.format(DateTime.now());
     super.initState();
   }
+
+  @override
+  void dispose() {
+    total.clear();
+    expenseVoucherList.clear();
+    super.dispose();
+  }
+
+  final FocusNode _itemNameFocus = FocusNode();
+  final FocusNode _itemQtyFocus = FocusNode();
+  final FocusNode _itemRateFocus = FocusNode();
+  final FocusNode _itemDescriptionFocus = FocusNode();
+
+  final _itemNameControllerupdate = TextEditingController();
+  final _expenseQuantityupdate = TextEditingController();
+  final _priceControllerupdate = TextEditingController();
+  final _itemDescriptionControllerupdate = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -92,121 +116,203 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
                 ],
               ),
             ),
-            SizedBox(
-                height: 300,
-                child: StreamBuilder(
-                  stream: expenseCollectionRef.snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    return ListView.builder(
-                      itemCount: snapshot.data?.docs.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            "${snapshot.data?.docs[index]['expName']}",
-                            style:
-                                GoogleFonts.inter(fontWeight: FontWeight.bold),
-                          ),
-                          trailing: Text(
-                              "₹  ${snapshot.data?.docs[index]['expAmount']}",
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.bold)),
-                          onTap: () {
-                            setState(() {
-                              itemPriceController.text =
-                                  "${snapshot.data?.docs[index]['expAmount']}";
-                            });
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return addExpenceItem(
-                                      snapshot, index, context);
-                                });
-                          },
-                        );
-                      },
-                    );
-                  },
-                )),
             Container(
-                padding: const EdgeInsets.all(10),
-                color: const Color(0xff1A659E),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Item Name",
-                      style: GoogleFonts.inter(color: Colors.white),
-                    ),
-                    Container(
-                      width: 200,
-                      alignment: Alignment.center,
+              width: double.maxFinite,
+              child: DataTable(
+                  headingRowHeight: 30,
+                  headingRowColor: MaterialStateColor.resolveWith(
+                      (states) => Colors.blue.shade600),
+                  showCheckboxColumn: false,
+                  columns: [
+                    DataColumn(
+                        label: Container(
+                      width: 150,
                       child: Text(
-                        "Quantity",
-                        style: GoogleFonts.inter(color: Colors.white),
+                        "Item Name",
+                        style: GoogleFonts.inter(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    )),
+                    DataColumn(
+                        label: Text(
+                      "Qty",
+                      style: GoogleFonts.inter(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    )),
+                    DataColumn(
+                        label: Text(
+                      "Rate",
+                      style: GoogleFonts.inter(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    )),
+                    DataColumn(
+                        label: Text(
+                      "Amount",
+                      style: GoogleFonts.inter(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ))
+                  ],
+                  dataRowHeight: 50,
+                  rows: expenseVoucherList
+                      .map((e) => DataRow(
+                              cells: [
+                                DataCell(Text(e.itemName)),
+                                DataCell(Text(e.quantity.toString())),
+                                DataCell(Text(e.price.toString())),
+                                DataCell(Text("${e.quantity * e.price}"))
+                              ],
+                              onSelectChanged: (selected) {
+                                setState(() {
+                                  _expenseQuantityupdate.text =
+                                      e.quantity.toString();
+                                  _priceControllerupdate.text =
+                                      e.price.toString();
+                                  expenseDescription.text = e.description;
+                                });
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return updateitem(e, context);
+                                    });
+                              }))
+                      .toList()),
+            ),
+            Container(
+              width: double.maxFinite,
+              child: Row(
+                children: [
+                  Container(
+                    width: 200,
+                    child: StreamBuilder(
+                        stream: expenseCollectionRef.snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          return Container(
+                            padding: const EdgeInsets.all(10),
+                            child: SearchField(
+                              focusNode: _itemNameFocus,
+                              onSubmit: (value) {
+                                itemNameController.text = value;
+                                _itemQtyFocus.requestFocus();
+                              },
+                              controller: itemNameController,
+                              onSuggestionTap: (suggestion) {
+                                itemNameController.text = suggestion.searchKey;
+                                _itemQtyFocus.requestFocus();
+                                setState(() {
+                                  itemPriceController.text =
+                                      suggestion.item.toString();
+                                });
+                              },
+                              suggestions: snapshot.data!.docs
+                                  .map((e) => SearchFieldListItem(
+                                      '${e['expName']}',
+                                      item: "${e['expAmount']}"))
+                                  .toList(),
+                            ),
+                          );
+                        }),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: 30,
+                        child: TextField(
+                          controller: expenseQuantity,
+                          focusNode: _itemQtyFocus,
+                          onChanged: (value) {
+                            if (value.isEmpty || value == "0") {
+                              expenseAmount.text = "0";
+                            } else {
+                              setState(() {
+                                expenseAmount.text = double.parse(
+                                        "${int.parse(value) * double.parse(itemPriceController.text)}")
+                                    .toString();
+                              });
+                            }
+                          },
+                          onSubmitted: (value) {
+                            _itemRateFocus.requestFocus();
+                          },
+                        ),
                       ),
                     ),
-                    Text(
-                      "Price",
-                      style: GoogleFonts.inter(color: Colors.white),
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: 200,
-              child: ListView(
-                children: expenseVoucherList.map((e) {
-                  return ListTile(
-                    shape: const Border(
-                        bottom: BorderSide(color: Colors.grey, width: 0.5)),
-                    leading: Text(e.itemName, style: GoogleFonts.inter()),
-                    onTap: () {},
-                    title: Container(
-                      alignment: Alignment.center,
-                      width: 200,
-                      child: Text(e.quantity.toString(),
-                          style: GoogleFonts.inter()),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        width: 30,
+                        child: TextField(
+                          controller: itemPriceController,
+                          focusNode: _itemRateFocus,
+                          onChanged: (value) {
+                            if (value.isEmpty || value == '0') {
+                              setState(() {
+                                expenseAmount.text = "0";
+                              });
+                            } else {
+                              setState(() {
+                                expenseAmount.text = double.parse(
+                                        "${int.parse(expenseQuantity.text) * double.parse(value)}")
+                                    .toString();
+                              });
+                            }
+                          },
+                          onSubmitted: (value) {
+                            setState(() {
+                              expenseVoucherList.add(ExpenseItems(
+                                  itemNameController.text,
+                                  int.parse(expenseQuantity.text),
+                                  double.parse(value),
+                                  itemDescriptionController.text));
+                              total.add(double.parse(expenseAmount.text));
+                              itemNameController.clear();
+                              expenseQuantity.clear();
+                              itemPriceController.clear();
+                              expenseAmount.clear();
+                              print(total);
+                            });
+                            _itemNameFocus.requestFocus();
+                          },
+                        ),
+                      ),
                     ),
-                    trailing: Text(
-                      e.price.toString(),
-                      style: GoogleFonts.inter(),
+                  ),
+                  Container(
+                    width: 100,
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: 30,
+                      child: TextField(
+                        enabled: false,
+                        controller: expenseAmount,
+                        focusNode: _itemDescriptionFocus,
+                      ),
                     ),
-                  );
-                }).toList(),
+                  )
+                ],
               ),
             ),
             Container(
+                color: Colors.white,
                 padding: const EdgeInsets.all(10),
                 alignment: Alignment.centerRight,
                 child: Text(
-                  "Total",
+                  "Total : ₹ ${total.sum}",
                   style: GoogleFonts.inter(fontSize: 20),
                 )),
             Container(
+              color: Colors.white,
               padding: const EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 150,
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: const Color(0xff1A659E)),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SearchExpense()));
-                        },
-                        child: Text(
-                          "Add Items",
-                          style: GoogleFonts.inter(),
-                        )),
-                  ),
                   SizedBox(
                     width: 150,
                     child: ElevatedButton(
@@ -217,6 +323,132 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
                           "Finish",
                           style: GoogleFonts.inter(),
                         )),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Dialog updateitem(ExpenseItems e, BuildContext context) {
+    return Dialog(
+      child: Container(
+        height: 450,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              e.itemName,
+              style:
+                  GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Container(
+              height: 20,
+            ),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 5.0,
+                    ),
+                    child: Text(
+                      "Quantity",
+                      style: GoogleFonts.inter(),
+                    ),
+                  ),
+                  CupertinoTextField(
+                    controller: _expenseQuantityupdate,
+                    placeholder: "Quantity",
+                    padding: const EdgeInsets.all(10),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5.0, top: 10),
+                    child: Text(
+                      "Price",
+                      style: GoogleFonts.inter(),
+                    ),
+                  ),
+                  CupertinoTextField(
+                    controller: _priceControllerupdate,
+                    placeholder: "Quantity",
+                    padding: const EdgeInsets.all(10),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5.0, top: 10),
+                    child: Text(
+                      "Description",
+                      style: GoogleFonts.inter(),
+                    ),
+                  ),
+                  CupertinoTextField(
+                    maxLines: 5,
+                    controller: _itemDescriptionControllerupdate,
+                    placeholder: "Description",
+                    padding: const EdgeInsets.all(10),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        expenseVoucherList.remove(e);
+                        total.removeAt(expenseVoucherList.indexOf(e));
+                        print(total);
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Delete",
+                      style: GoogleFonts.inter(color: Colors.red),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 100,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: const Color(0xff1A659E)),
+                        onPressed: () {
+                          setState(() {
+                            expenseVoucherList[expenseVoucherList.indexOf(e)] =
+                                ExpenseItems(
+                                    e.itemName,
+                                    int.parse(_expenseQuantityupdate.text),
+                                    double.parse(_priceControllerupdate.text),
+                                    itemDescriptionController.text);
+                            total[expenseVoucherList.indexOf(e)] = double.parse(
+                                "${int.parse(_expenseQuantityupdate.text) * double.parse(_priceControllerupdate.text)}");
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text("Update",
+                            style: GoogleFonts.inter(
+                                fontWeight: FontWeight.bold))),
                   )
                 ],
               ),
@@ -314,7 +546,7 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
                       Navigator.pop(context);
                     },
                     child: Text(
-                      "Cancle",
+                      "Delete",
                       style: GoogleFonts.inter(color: Colors.red),
                     ),
                   ),
@@ -326,12 +558,16 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
                         onPressed: () {
                           setState(() {
                             expenseVoucherList.add(ExpenseItems(
-                                "${snapshot.data?.docs[index]['expName']}",
+                                snapshot.data!.docs[index]['expName']
+                                    .toString(),
                                 int.parse(expenseQuantity.text),
                                 double.parse(itemPriceController.text),
                                 itemDescriptionController.text));
-                            Navigator.pop(context);
+                            total.add(double.parse(
+                                "${int.parse(expenseQuantity.text) * double.parse(itemPriceController.text)}"));
                           });
+
+                          Navigator.pop(context);
                         },
                         child: Text("Add",
                             style: GoogleFonts.inter(
