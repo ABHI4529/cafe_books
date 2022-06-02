@@ -1,13 +1,15 @@
+import 'package:cafe_books/screens/auth/social-auth.dart';
 import 'package:cafe_books/screens/expense/expense.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cafe_books/screens/items/items.dart';
-import 'package:cafe_books/screens/sale/sale.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../main.dart';
 import '../screens/clients/clients.dart';
+import '../screens/sale/sale.dart';
 
 class CDrawer extends StatefulWidget {
   const CDrawer({Key? key}) : super(key: key);
@@ -17,6 +19,7 @@ class CDrawer extends StatefulWidget {
 }
 
 class _CDrawerState extends State<CDrawer> {
+  var user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -43,14 +46,14 @@ class _CDrawerState extends State<CDrawer> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Abhinav Gadekar",
+                          "${user?.displayName}",
                           style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 17),
                         ),
                         Text(
-                          "abhinavgadekar4529@gmail.com",
+                          "${user?.email}",
                           style: GoogleFonts.inter(
                               color: Colors.white, fontSize: 10),
                         ),
@@ -229,7 +232,15 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () async {
+              await FirebaseServices().googleSignOut();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Login(),
+                ),
+              );
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
