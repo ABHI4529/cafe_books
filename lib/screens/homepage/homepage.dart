@@ -1,5 +1,6 @@
 import 'package:cafe_books/component/cmenu.dart';
 import 'package:cafe_books/component/drawer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   bool page1 = false;
   bool page2 = false;
   bool page3 = false;
+  var user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +29,7 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.white,
           elevation: 0,
           title: Text(
-            "Abhinav Gadekar",
+            "${user?.displayName}",
             style: GoogleFonts.inter(
                 color: Colors.black, fontWeight: FontWeight.bold),
           ),
