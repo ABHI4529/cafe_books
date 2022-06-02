@@ -1,46 +1,65 @@
 import 'package:cafe_books/component/ctextfield.dart';
+import 'package:cafe_books/component/usnackbar.dart';
 import 'package:cafe_books/datautil/saledatahandler.dart';
+import 'package:cafe_books/screens/expense/expensevoucher.dart';
 import 'package:cafe_books/screens/items/additem.dart';
+import 'package:cafe_books/screens/sale/sale.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:cafe_books/screens/sale/AddVocuer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class VoucherItems extends StatefulWidget {
+class EditVoucherItems extends StatefulWidget {
   Function refresh;
-  VoucherItems({Key? key, required this.refresh}) : super(key: key);
+  String? itemName;
+  String? itemQuantity;
+  String? itemUnit;
+  String? itemRate;
+  String? itemDiscount;
+  EditVoucherItems(
+      {Key? key,
+      required this.refresh,
+      this.itemName,
+      this.itemQuantity,
+      this.itemUnit,
+      this.itemRate,
+      this.itemDiscount})
+      : super(key: key);
 
   @override
-  State<VoucherItems> createState() => _VoucherItemsState();
+  State<EditVoucherItems> createState() => _EditVoucherItemsState();
 }
 
-List items = [];
-double top = -500;
-double width = 200;
-String itemSearchQury = "";
-final itemQuantity = FocusNode();
-final itemRateNode = FocusNode();
-final discountNode = FocusNode();
-final itemNameNode = FocusNode();
+class _EditVoucherItemsState extends State<EditVoucherItems> {
+  List items = [];
+  double top = -500;
+  double width = 200;
+  String itemSearchQury = "";
+  final itemQuantity = FocusNode();
+  final itemRateNode = FocusNode();
+  final discountNode = FocusNode();
+  final itemNameNode = FocusNode();
 
-final _voucherItemNameController = TextEditingController();
-final _voucherItemQuantityController = TextEditingController();
-final _voucherItemPriceController = TextEditingController();
-final _voucherItemUnitcontoller = TextEditingController();
-final _voucherItemDiscountController = TextEditingController();
-final _voucherDiscountAmount = TextEditingController();
-
-double subtotal = 0;
-double total = 0;
-
-List<SaleHandler> itemList = [];
-
-class _VoucherItemsState extends State<VoucherItems> {
+  double subtotal = 0;
+  double total = 0;
+  final _voucherItemNameController = TextEditingController();
+  final _voucherItemQuantityController = TextEditingController();
+  final _voucherItemPriceController = TextEditingController();
+  final _voucherItemUnitcontoller = TextEditingController();
+  final _voucherItemDiscountController = TextEditingController();
+  final _voucherDiscountAmount = TextEditingController();
   @override
   void initState() {
     _voucherItemDiscountController.text = '0';
+    setState(() {
+      _voucherItemNameController.text = "${widget.itemName}";
+      _voucherItemDiscountController.text = "${widget.itemDiscount}";
+      _voucherItemQuantityController.text = "${widget.itemQuantity}";
+      _voucherItemPriceController.text = "${widget.itemRate}";
+      _voucherItemUnitcontoller.text = "${widget.itemUnit}";
+    });
     super.initState();
   }
 
@@ -452,27 +471,10 @@ class _VoucherItemsState extends State<VoucherItems> {
                       child: TextButton(
                           onPressed: () {
                             widget.refresh();
-                            setState(() {
-                              itemList.add(SaleHandler(
-                                _voucherItemNameController.text,
-                                int.parse(_voucherItemQuantityController.text),
-                                _voucherItemUnitcontoller.text,
-                                double.parse(_voucherItemPriceController.text),
-                                double.parse(
-                                    _voucherItemDiscountController.text),
-                                subtotal,
-                              ));
-                            });
-                            _voucherItemNameController.clear();
-                            _voucherDiscountAmount.clear();
-                            _voucherItemPriceController.clear();
-                            _voucherItemUnitcontoller.clear();
-                            _voucherItemQuantityController.clear();
-                            _voucherItemDiscountController.clear();
-                            itemNameNode.requestFocus();
+                            Navigator.pop(context);
                           },
                           child: Text(
-                            "Save & New",
+                            "Delete",
                             style: GoogleFonts.inter(),
                           )))),
               Expanded(
@@ -483,27 +485,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(0)),
                               backgroundColor: const Color(0xff001F54)),
-                          onPressed: () {
-                            widget.refresh();
-                            setState(() {
-                              itemList.add(SaleHandler(
-                                _voucherItemNameController.text,
-                                int.parse(_voucherItemQuantityController.text),
-                                _voucherItemUnitcontoller.text,
-                                double.parse(_voucherItemPriceController.text),
-                                double.parse(
-                                    _voucherItemDiscountController.text),
-                                subtotal,
-                              ));
-                            });
-                            _voucherItemNameController.clear();
-                            _voucherDiscountAmount.clear();
-                            _voucherItemPriceController.clear();
-                            _voucherItemUnitcontoller.clear();
-                            _voucherItemQuantityController.clear();
-                            _voucherItemDiscountController.clear();
-                            Navigator.pop(context);
-                          },
+                          onPressed: () {},
                           child: Text(
                             "Save",
                             style: GoogleFonts.inter(

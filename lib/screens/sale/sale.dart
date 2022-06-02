@@ -3,12 +3,14 @@ import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/screens/clients/addclient.dart';
 import 'package:cafe_books/screens/clients/clients.dart';
 import 'package:cafe_books/screens/sale/AddVocuer.dart';
+import 'package:cafe_books/screens/sale/editvoucher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:searchfield/searchfield.dart';
+import 'package:collection/collection.dart';
 
 class Sale extends StatefulWidget {
   Sale({Key? key}) : super(key: key);
@@ -23,24 +25,39 @@ final voucherCustomerContact = TextEditingController();
 String _clientSearch = "";
 List clients = [];
 
+GlobalKey salekey = GlobalKey();
+
 class _SaleState extends State<Sale> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
   String voucherDate = "";
   double top = -500;
+  double totalDiscount = 0;
+  double itemsubtotal = 0;
+  List<double> totaldiscountlist = [];
+  List<double> totalsubamount = [];
   @override
   void initState() {
     voucherDate = dateformat.format(DateTime.now());
+    itemList.forEach((element) {
+      setState(() {
+        totaldiscountlist.insert(itemList.indexOf(element), element.discount);
+        totalsubamount.insert(itemList.indexOf(element), element.subtotal);
+        itemsubtotal = totalsubamount.sum;
+        totalDiscount = totaldiscountlist.sum;
+      });
+    });
     super.initState();
   }
 
   GlobalKey searchKeu = GlobalKey();
-  FocusNode _numberfocus = FocusNode();
-  FocusNode _voucherNumberfocus = FocusNode();
+  final FocusNode _numberfocus = FocusNode();
+  final FocusNode _voucherNumberfocus = FocusNode();
   double width = 100;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: salekey,
       appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -182,103 +199,184 @@ class _SaleState extends State<Sale> {
                               children: itemList.map((e) {
                                 double total = e.subtotal -
                                     (e.subtotal * e.discount / 100);
-                                return Container(
-                                  width: double.maxFinite,
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 3, horizontal: 10),
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Colors.black12,
-                                      border: Border.all(color: Colors.grey)),
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditVoucherItems(
+                                                    itemName: e.itemName,
+                                                    itemDiscount:
+                                                        "${e.discount}",
+                                                    itemRate: "${e.rate}",
+                                                    itemQuantity:
+                                                        "${e.itemQuantity}",
+                                                    itemUnit: e.itemUnit,
+                                                    refresh: () {
+                                                      setState(() {
+                                                        itemList.remove(e);
+                                                        itemList
+                                                            .forEach((element) {
+                                                          setState(() {
+                                                            itemList.forEach(
+                                                                (element) {
+                                                              totaldiscountlist.insert(
+                                                                  itemList.indexOf(
+                                                                      element),
+                                                                  element
+                                                                      .discount);
+                                                              totalsubamount.insert(
+                                                                  itemList.indexOf(
+                                                                      element),
+                                                                  element
+                                                                      .subtotal);
+                                                            });
+                                                          });
+                                                          setState(() {
+                                                            itemsubtotal =
+                                                                totalsubamount
+                                                                    .sum;
+                                                            totalDiscount =
+                                                                totaldiscountlist
+                                                                    .sum;
+                                                          });
+                                                        });
+                                                      });
+                                                    })));
+                                  },
                                   child: Container(
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                                child: Row(
-                                              children: [
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.all(5),
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              3)),
-                                                  child: Text(
-                                                    "# ${itemList.indexOf(e) + 1}",
+                                    width: double.maxFinite,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 10),
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: Colors.grey.shade200,
+                                        border: Border.all(color: Colors.grey)),
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                  child: Row(
+                                                children: [
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(5),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(3)),
+                                                    child: Text(
+                                                      "# ${itemList.indexOf(e) + 1}",
+                                                      style: GoogleFonts.inter(
+                                                          fontSize: 9,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "  ${e.itemName}",
                                                     style: GoogleFonts.inter(
-                                                        fontSize: 9,
+                                                        fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.bold),
                                                   ),
-                                                ),
-                                                Text(
-                                                  "  ${e.itemName}",
-                                                  style: GoogleFonts.inter(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ],
-                                            )),
-                                            Text(
-                                              "₹ $total",
-                                              style: GoogleFonts.inter(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold),
-                                            )
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Item Subtotal",
-                                                  style: GoogleFonts.inter()),
+                                                ],
+                                              )),
                                               Text(
-                                                "${e.itemQuantity} x ₹ ${e.rate} = ₹ ${e.itemQuantity * e.rate}",
-                                                style: GoogleFonts.inter(),
+                                                "₹ $total",
+                                                style: GoogleFonts.inter(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               )
                                             ],
                                           ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Discount : ${e.discount} %",
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text("Item Subtotal",
+                                                    style: GoogleFonts.inter()),
+                                                Text(
+                                                  "${e.itemQuantity} x ₹ ${e.rate} = ₹ ${e.itemQuantity * e.rate}",
+                                                  style: GoogleFonts.inter(),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                    "Discount : ${e.discount} %",
+                                                    style: GoogleFonts.inter(
+                                                        color: const Color
+                                                                .fromARGB(255,
+                                                            114, 105, 26))),
+                                                Text(
+                                                  "₹ ${e.subtotal - total}",
                                                   style: GoogleFonts.inter(
                                                       color:
                                                           const Color.fromARGB(
                                                               255,
-                                                              219,
-                                                              203,
-                                                              57))),
-                                              Text(
-                                                "₹ ${e.subtotal - total}",
-                                                style: GoogleFonts.inter(
-                                                    color: const Color.fromARGB(
-                                                        255, 219, 203, 57)),
-                                              )
-                                            ],
+                                                              114,
+                                                              105,
+                                                              26)),
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                        )
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
                               }).toList(),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Total Discount : ${totalDiscount} %"),
+                                  Text("Sub Total : ₹ ${itemsubtotal}")
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    "Total : ₹ ${itemsubtotal - (itemsubtotal * totalDiscount / 100)}",
+                                    style: GoogleFonts.inter(
+                                        decoration: TextDecoration.underline,
+                                        decorationStyle:
+                                            TextDecorationStyle.dashed,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
                             Container(
                               padding: const EdgeInsets.all(10),
@@ -289,8 +387,28 @@ class _SaleState extends State<Sale> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                VoucherItems()));
+                                            builder: (context) => VoucherItems(
+                                                  refresh: () {
+                                                    setState(() {
+                                                      itemList
+                                                          .forEach((element) {
+                                                        totaldiscountlist.insert(
+                                                            itemList.indexOf(
+                                                                element),
+                                                            element.discount);
+                                                        totalsubamount.insert(
+                                                            itemList.indexOf(
+                                                                element),
+                                                            element.subtotal);
+                                                        itemsubtotal =
+                                                            totalsubamount.sum;
+                                                        totalDiscount =
+                                                            totaldiscountlist
+                                                                .sum;
+                                                      });
+                                                    });
+                                                  },
+                                                )));
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -394,7 +512,7 @@ class _SaleState extends State<Sale> {
                                     );
                                   }).toList(),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
