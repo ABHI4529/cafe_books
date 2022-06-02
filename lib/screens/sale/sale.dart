@@ -231,15 +231,13 @@ class _SaleState extends State<Sale> {
                                                                       element),
                                                                   element
                                                                       .subtotal);
+                                                              itemsubtotal =
+                                                                  totalsubamount
+                                                                      .sum;
+                                                              totalDiscount =
+                                                                  totaldiscountlist
+                                                                      .sum;
                                                             });
-                                                          });
-                                                          setState(() {
-                                                            itemsubtotal =
-                                                                totalsubamount
-                                                                    .sum;
-                                                            totalDiscount =
-                                                                totaldiscountlist
-                                                                    .sum;
                                                           });
                                                         });
                                                       });
