@@ -7,4 +7,13 @@ class SaleHandler {
   String itemUnit;
   double rate;
   double discount;
+
+  Map<String, dynamic> toJson() => {
+        "itemName": itemName,
+        "itemQuantity": itemQuantity,
+        "itemSubTotal": subtotal,
+        "itemunit": itemUnit,
+        "itemdiscount": discount,
+        "itemrate": rate
+      };
 }

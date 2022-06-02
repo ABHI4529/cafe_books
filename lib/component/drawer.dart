@@ -2,6 +2,7 @@ import 'package:cafe_books/screens/auth/social-auth.dart';
 import 'package:cafe_books/screens/expense/expense.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cafe_books/screens/items/items.dart';
+import 'package:cafe_books/screens/sale/saleview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +134,7 @@ class _CDrawerState extends State<CDrawer> {
           TextButton(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Sale()));
+                  context, MaterialPageRoute(builder: (context) => SaleView()));
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
