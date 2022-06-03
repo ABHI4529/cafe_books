@@ -37,11 +37,7 @@ var userEmail = FirebaseAuth.instance.currentUser?.email;
 GlobalKey salekey = GlobalKey();
 final saleCollection = FirebaseFirestore.instance
     .collection("book_data")
-<<<<<<< HEAD
-    .doc(userEmail)
-=======
     .doc("${user?.email}")
->>>>>>> 2725ff5aa6a5551e29f7b53bc84c3d03efc60c11
     .collection("sales");
 double totalamount = 0;
 
