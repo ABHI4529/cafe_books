@@ -12,6 +12,11 @@ class SaleView extends StatefulWidget {
   State<SaleView> createState() => _SaleViewState();
 }
 
+final saleCollectionRef = FirebaseFirestore.instance
+    .collection("book_data")
+    .doc("abhinavgadekar4529@gmail.com")
+    .collection("Sales");
+
 class _SaleViewState extends State<SaleView> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
   @override
@@ -32,7 +37,7 @@ class _SaleViewState extends State<SaleView> {
             style: GoogleFonts.inter(color: Colors.white),
           )),
       body: StreamBuilder(
-          stream: saleCollection.snapshots(),
+          stream: saleCollectionRef.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
