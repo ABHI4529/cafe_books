@@ -77,14 +77,6 @@ class _SaleState extends State<Sale> {
       "totalSale": itemsubtotal - (itemsubtotal * totalDiscount / 100),
       "Items": jsonEncode(itemList.map((e) => e.toJson()).toList())
     }).then((value) async {
-      setState(() {
-        itemList.clear();
-        voucherCustomerName.clear();
-        voucherCustomerContact.clear();
-        total = 0;
-        subtotal = 0;
-        totalDiscount = 0;
-      });
       StringBuffer istring = StringBuffer();
 
       for (var element in itemList) {
@@ -98,10 +90,18 @@ class _SaleState extends State<Sale> {
           "-----------------------------------------\n"
           "_discount : $totalDiscount %_ *Total : ₹ $total* \n"
           "Thanks for visiting *Chapters of Diet*!";
-      final whatsapplink = WhatsAppUnilink(
+      final whatsapplink = await WhatsAppUnilink(
           phoneNumber: "+91${voucherCustomerContact.text}", text: whatsapptext);
       // ignore: deprecated_member_use
       await launch('$whatsapplink');
+      setState(() {
+        itemList.clear();
+        voucherCustomerName.clear();
+        voucherCustomerContact.clear();
+        total = 0;
+        subtotal = 0;
+        totalDiscount = 0;
+      });
     });
   }
 
