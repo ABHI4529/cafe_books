@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/screens/clients/addclient.dart';
@@ -7,6 +6,7 @@ import 'package:cafe_books/screens/clients/clients.dart';
 import 'package:cafe_books/screens/sale/AddVocuer.dart';
 import 'package:cafe_books/screens/sale/edititem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -30,10 +30,11 @@ final voucherCustomerContact = TextEditingController();
 String _clientSearch = "";
 List clients = [];
 
+var userEmail = FirebaseAuth.instance.currentUser?.email;
 GlobalKey salekey = GlobalKey();
 final saleCollection = FirebaseFirestore.instance
     .collection("book_data")
-    .doc("abhinavgadekar4529@gmail.com")
+    .doc(userEmail)
     .collection("sales");
 
 class _SaleState extends State<Sale> {
