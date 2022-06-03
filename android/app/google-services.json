@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "334594413897-g47smcpc1koo9sqa0lo2tvkhhn9soukg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rendersoft.cafe_books",
+            "certificate_hash": "e5ce337f8c8b7f9b0a4748acc6708fdb44b32253"
+          }
+        },
+        {
+          "client_id": "334594413897-guhubahgt85bivniaa0umquurcakc5fv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rendersoft.cafe_books",
+            "certificate_hash": "3be5afa452ffb7604cde105e69723be4246dc3dd"
+          }
+        },
+        {
           "client_id": "334594413897-dporpe4p0o01fsai4vvh1sc7lg22nqjj.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +45,13 @@
             {
               "client_id": "334594413897-dporpe4p0o01fsai4vvh1sc7lg22nqjj.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "334594413897-li30vmaf3sb0apeenbhjb603dph5dctu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rendersoft.cafeBooks"
+              }
             }
           ]
         }

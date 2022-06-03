@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cafe_books/screens/sale/sale.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,16 +8,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
 
+import '../../datautil/saledatahandler.dart';
+import '../homepage/homepage.dart';
+import 'editsalevoucher.dart';
+
 class SaleView extends StatefulWidget {
   SaleView({Key? key}) : super(key: key);
   @override
   State<SaleView> createState() => _SaleViewState();
 }
-
-final saleCollectionRef = FirebaseFirestore.instance
-    .collection("book_data")
-    .doc("abhinavgadekar4529@gmail.com")
-    .collection("Sales");
 
 class _SaleViewState extends State<SaleView> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
@@ -37,7 +38,7 @@ class _SaleViewState extends State<SaleView> {
             style: GoogleFonts.inter(color: Colors.white),
           )),
       body: StreamBuilder(
-          stream: saleCollectionRef.snapshots(),
+          stream: saleCollection.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -78,69 +79,96 @@ class _SaleViewState extends State<SaleView> {
                   itemBuilder: (context, index) {
                     Timestamp t = snapshot.data?.docs[index]['date'];
                     DateTime d = t.toDate();
-                    return Container(
-                      padding: const EdgeInsets.all(20),
-                      margin: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "${snapshot.data!.docs[index]['customerName']}",
-                                style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                  "Invoice # ${snapshot.data!.docs[index]['saleNumber']}")
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
+                    List items = snapshot.data!.docs[index]['Items'];
+
+                    List<SaleHandler> edititems = List<SaleHandler>.from(
+                        items.map((e) => SaleHandler.fromJson(e)));
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditSale(
+                                      edititems: edititems,
+                                      customerName: snapshot.data?.docs[index]
+                                          ['customerName'],
+                                      docid: snapshot.data?.docs[index].id,
+                                      value: snapshot.data?.docs[index]
+                                          ['paymentMethod'],
+                                      voucherSaleNumber: snapshot
+                                          .data?.docs[index]['saleNumber'],
+                                      voucherDate: d,
+                                      customerContact: snapshot
+                                          .data?.docs[index]['customerContact'],
+                                    )));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        margin: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Payment Method : ${snapshot.data!.docs[index]['paymentMethod']}",
-                                  style: GoogleFonts.inter(),
+                                  "${snapshot.data!.docs[index]['customerName']}",
+                                  style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  "${dateformat.format(d)}",
-                                  style: GoogleFonts.inter(),
-                                ),
+                                    "Invoice # ${snapshot.data!.docs[index]['saleNumber']}")
                               ],
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "₹ ${snapshot.data!.docs[index]['totalSale']}",
-                                style: GoogleFonts.inter(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
+                            Container(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Payment Method : ${snapshot.data!.docs[index]['paymentMethod']}",
+                                    style: GoogleFonts.inter(),
+                                  ),
+                                  Text(
+                                    "${dateformat.format(d)}",
+                                    style: GoogleFonts.inter(),
+                                  ),
+                                ],
                               ),
-                              Container(
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.whatsapp)),
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.call)),
-                                    IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.print)),
-                                  ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "₹ ${snapshot.data!.docs[index]['totalSale']}",
+                                  style: GoogleFonts.inter(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                              )
-                            ],
-                          )
-                        ],
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.whatsapp)),
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.call)),
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(Icons.print)),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },
