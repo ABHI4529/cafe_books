@@ -67,41 +67,42 @@ class _SaleState extends State<Sale> {
   double width = 100;
 
   Future saveBill() async {
-    // saleCollection.doc().set({
-    //   "customerName": voucherCustomerName.text,
-    //   "saleNumber": saleNumber,
-    //   "orderCompleted": false,
-    //   "customerContact": voucherCustomerContact.text,
-    //   "paymentMethod": paymentvalue,
-    //   "date": voucherDateFull,
-    //   "totalSale": itemsubtotal - (itemsubtotal * totalDiscount / 100),
-    //   "Items": jsonEncode(itemList.map((e) => e.toJson()).toList())
-    // }).then((value) async {
-    //   setState(() {
-    //     itemList.clear();
-    //     voucherCustomerName.clear();
-    //     voucherCustomerContact.clear();
-    //     total = 0;
-    //     subtotal = 0;
-    //     totalDiscount = 0;
-    //   });
-    // });
-    StringBuffer istring = StringBuffer();
+    saleCollection.doc().set({
+      "customerName": voucherCustomerName.text,
+      "saleNumber": saleNumber,
+      "orderCompleted": false,
+      "customerContact": voucherCustomerContact.text,
+      "paymentMethod": paymentvalue,
+      "date": voucherDateFull,
+      "totalSale": itemsubtotal - (itemsubtotal * totalDiscount / 100),
+      "Items": jsonEncode(itemList.map((e) => e.toJson()).toList())
+    }).then((value) async {
+      setState(() {
+        itemList.clear();
+        voucherCustomerName.clear();
+        voucherCustomerContact.clear();
+        total = 0;
+        subtotal = 0;
+        totalDiscount = 0;
+      });
+      StringBuffer istring = StringBuffer();
 
-    for (var element in itemList) {
-      istring.write(
-          "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
-    }
-    String whatsapptext = "Hey!! Here's your bill ${voucherCustomerName.text}\n"
-        "order number : $saleNumber\n"
-        "-----------------------------------------\n $istring\n"
-        "-----------------------------------------\n"
-        "_discount : $totalDiscount %_ *Total : ₹ $total* \n\n"
-        "Thanks for visiting *Chapters of Diet*!";
-    final whatsapplink = WhatsAppUnilink(
-        phoneNumber: "+91${voucherCustomerContact.text}", text: whatsapptext);
-    // ignore: deprecated_member_use
-    await launch('$whatsapplink');
+      for (var element in itemList) {
+        istring.write(
+            "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
+      }
+      String whatsapptext =
+          "Hey!! Here's your bill ${voucherCustomerName.text}\n"
+          "order number : $saleNumber\n"
+          "-----------------------------------------\n $istring\n"
+          "-----------------------------------------\n"
+          "_discount : $totalDiscount %_ *Total : ₹ $total* \n"
+          "Thanks for visiting *Chapters of Diet*!";
+      final whatsapplink = WhatsAppUnilink(
+          phoneNumber: "+91${voucherCustomerContact.text}", text: whatsapptext);
+      // ignore: deprecated_member_use
+      await launch('$whatsapplink');
+    });
   }
 
   @override
