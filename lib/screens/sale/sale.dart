@@ -88,18 +88,19 @@ class _SaleState extends State<Sale> {
     // });
     StringBuffer istring = StringBuffer();
 
-    itemList.forEach((element) {
+    for (var element in itemList) {
       istring.write(
           "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
-    });
+    }
     String whatsapptext = "Hey!! Here's your bill ${voucherCustomerName.text}\n"
         "order number : $saleNumber\n"
         "-----------------------------------------\n $istring\n"
         "-----------------------------------------\n"
-        "_discount : ${totalDiscount} %_ *Total : ₹ $total* \n"
+        "_discount : $totalDiscount %_ *Total : ₹ $total* \n\n"
         "Thanks for visiting *Chapters of Diet*!";
-    final whatsapplink = await WhatsAppUnilink(
+    final whatsapplink = WhatsAppUnilink(
         phoneNumber: "+91${voucherCustomerContact.text}", text: whatsapptext);
+    // ignore: deprecated_member_use
     await launch('$whatsapplink');
   }
 
