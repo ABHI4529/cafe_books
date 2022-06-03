@@ -13,15 +13,19 @@ import 'package:google_fonts/google_fonts.dart';
 
 class EditVoucherItems extends StatefulWidget {
   Function refresh;
+  Function delete;
   String? itemName;
   String? itemQuantity;
   String? itemUnit;
+  int index;
   String? itemRate;
   String? itemDiscount;
   EditVoucherItems(
       {Key? key,
       required this.refresh,
+      required this.delete,
       this.itemName,
+      required this.index,
       this.itemQuantity,
       this.itemUnit,
       this.itemRate,
@@ -60,6 +64,19 @@ class _EditVoucherItemsState extends State<EditVoucherItems> {
       _voucherItemPriceController.text = "${widget.itemRate}";
       _voucherItemUnitcontoller.text = "${widget.itemUnit}";
     });
+    if (_voucherItemQuantityController.text.isEmpty ||
+        _voucherItemQuantityController.text == "1") {
+      setState(() {
+        subtotal = double.parse(_voucherItemPriceController.text);
+      });
+      total = subtotal;
+    } else {
+      setState(() {
+        subtotal = double.parse(_voucherItemQuantityController.text) *
+            double.parse(_voucherItemPriceController.text);
+        total = subtotal;
+      });
+    }
     super.initState();
   }
 
@@ -470,7 +487,7 @@ class _EditVoucherItemsState extends State<EditVoucherItems> {
                       height: 60,
                       child: TextButton(
                           onPressed: () {
-                            widget.refresh();
+                            widget.delete();
                             Navigator.pop(context);
                           },
                           child: Text(
@@ -485,9 +502,25 @@ class _EditVoucherItemsState extends State<EditVoucherItems> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(0)),
                               backgroundColor: const Color(0xff001F54)),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              itemList[widget.index] = SaleHandler(
+                                _voucherItemNameController.text,
+                                int.parse(_voucherItemQuantityController.text),
+                                _voucherItemUnitcontoller.text,
+                                double.parse(_voucherItemPriceController.text),
+                                double.parse(
+                                    _voucherItemDiscountController.text),
+                                subtotal,
+                              );
+                            });
+                            setState(() {
+                              widget.refresh();
+                            });
+                            Navigator.pop(context);
+                          },
                           child: Text(
-                            "Save",
+                            "Update",
                             style: GoogleFonts.inter(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),

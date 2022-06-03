@@ -32,8 +32,8 @@ final _voucherItemUnitcontoller = TextEditingController();
 final _voucherItemDiscountController = TextEditingController();
 final _voucherDiscountAmount = TextEditingController();
 
-double subtotal = 0;
-double total = 0;
+double _subtotal = 0;
+double _total = 0;
 
 List<SaleHandler> itemList = [];
 
@@ -132,16 +132,16 @@ class _VoucherItemsState extends State<VoucherItems> {
                             onTextChanged: (value) {
                               if (value.isEmpty || value == "1") {
                                 setState(() {
-                                  subtotal = double.parse(
+                                  _subtotal = double.parse(
                                       _voucherItemPriceController.text);
                                 });
-                                total = subtotal;
+                                _total = _subtotal;
                               } else {
                                 setState(() {
-                                  subtotal = double.parse(value) *
+                                  _subtotal = double.parse(value) *
                                       double.parse(
                                           _voucherItemPriceController.text);
-                                  total = subtotal;
+                                  _total = _subtotal;
                                 });
                               }
                             },
@@ -167,16 +167,16 @@ class _VoucherItemsState extends State<VoucherItems> {
                             onTextChanged: (value) {
                               if (value.isEmpty) {
                                 setState(() {
-                                  subtotal = 0;
-                                  total = subtotal;
+                                  _subtotal = 0;
+                                  _total = _subtotal;
                                 });
                               } else {
                                 setState(() {
-                                  subtotal = double.parse(
+                                  _subtotal = double.parse(
                                           _voucherItemQuantityController.text) *
                                       double.parse(value);
 
-                                  total = subtotal;
+                                  _total = _subtotal;
                                 });
                               }
                             },
@@ -222,7 +222,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                             children: [
                               Text("Sub Total (Rate x Qty)",
                                   style: GoogleFonts.inter()),
-                              Text("₹ ${subtotal}",
+                              Text("₹ ${_subtotal}",
                                   style: GoogleFonts.inter(
                                       fontWeight: FontWeight.bold))
                             ],
@@ -243,17 +243,17 @@ class _VoucherItemsState extends State<VoucherItems> {
                                   onTextChanged: (value) {
                                     if (value.isEmpty) {
                                       setState(() {
-                                        total = subtotal;
+                                        _total = _subtotal;
                                         _voucherDiscountAmount.text = "0.0";
                                       });
                                     } else {
                                       setState(() {
-                                        total = subtotal -
-                                            (subtotal *
+                                        _total = _subtotal -
+                                            (_subtotal *
                                                 double.parse(value) /
                                                 100);
                                         _voucherDiscountAmount.text =
-                                            (total - subtotal).toString();
+                                            (_total - _subtotal).toString();
                                       });
                                     }
                                   },
@@ -302,7 +302,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                "₹ ${total}",
+                                "₹ ${_total}",
                                 style: GoogleFonts.inter(
                                   decoration: TextDecoration.underline,
                                   decorationStyle: TextDecorationStyle.dashed,
@@ -377,27 +377,27 @@ class _VoucherItemsState extends State<VoucherItems> {
                                 if (_voucherItemQuantityController
                                     .text.isEmpty) {
                                   setState(() {
-                                    total = subtotal;
+                                    _total = _subtotal;
                                   });
                                 } else {
                                   setState(() {
-                                    subtotal = double.parse(
+                                    _subtotal = double.parse(
                                             _voucherItemQuantityController
                                                 .text) *
                                         double.parse(
                                             _voucherItemPriceController.text);
-                                    total = subtotal;
+                                    _total = _subtotal;
                                   });
                                 }
                                 if (_voucherItemDiscountController
                                     .text.isEmpty) {
                                   setState(() {
-                                    total = subtotal;
+                                    _total = _subtotal;
                                   });
                                 } else {
                                   setState(() {
-                                    total = subtotal -
-                                        (subtotal *
+                                    _total = _subtotal -
+                                        (_subtotal *
                                             double.parse(
                                                 _voucherItemDiscountController
                                                     .text) /
@@ -460,7 +460,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                                 double.parse(_voucherItemPriceController.text),
                                 double.parse(
                                     _voucherItemDiscountController.text),
-                                subtotal,
+                                _subtotal,
                               ));
                             });
                             _voucherItemNameController.clear();
@@ -468,7 +468,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                             _voucherItemPriceController.clear();
                             _voucherItemUnitcontoller.clear();
                             _voucherItemQuantityController.clear();
-                            _voucherItemDiscountController.clear();
+                            _voucherItemDiscountController.text = "0.0";
                             itemNameNode.requestFocus();
                           },
                           child: Text(
@@ -484,7 +484,6 @@ class _VoucherItemsState extends State<VoucherItems> {
                                   borderRadius: BorderRadius.circular(0)),
                               backgroundColor: const Color(0xff001F54)),
                           onPressed: () {
-                            widget.refresh();
                             setState(() {
                               itemList.add(SaleHandler(
                                 _voucherItemNameController.text,
@@ -493,16 +492,16 @@ class _VoucherItemsState extends State<VoucherItems> {
                                 double.parse(_voucherItemPriceController.text),
                                 double.parse(
                                     _voucherItemDiscountController.text),
-                                subtotal,
+                                _subtotal,
                               ));
                             });
+                            widget.refresh();
                             _voucherItemNameController.clear();
                             _voucherDiscountAmount.clear();
                             _voucherItemPriceController.clear();
                             _voucherItemUnitcontoller.clear();
                             _voucherItemQuantityController.clear();
-                            _voucherItemDiscountController.clear();
-
+                            _voucherItemDiscountController.text = "0.0";
                             Navigator.pop(context);
                           },
                           child: Text(

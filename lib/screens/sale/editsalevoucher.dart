@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/datautil/saledatahandler.dart';
@@ -6,6 +7,7 @@ import 'package:cafe_books/screens/clients/addclient.dart';
 import 'package:cafe_books/screens/clients/clients.dart';
 import 'package:cafe_books/screens/sale/AddVocuer.dart';
 import 'package:cafe_books/screens/sale/edititem.dart';
+import 'package:cafe_books/screens/sale/sale.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,11 +22,27 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../homepage/homepage.dart';
 
-class Sale extends StatefulWidget {
-  Sale({Key? key}) : super(key: key);
+class EditSale extends StatefulWidget {
+  List<SaleHandler> edititems;
+  String? docid;
+  String? customerName;
+  String? customerContact;
+  int? voucherSaleNumber;
+  DateTime voucherDate;
+  String? value;
+  EditSale(
+      {Key? key,
+      required this.edititems,
+      this.voucherSaleNumber,
+      required this.voucherDate,
+      this.value,
+      this.docid,
+      this.customerContact,
+      this.customerName})
+      : super(key: key);
 
   @override
-  State<Sale> createState() => _SaleState();
+  State<EditSale> createState() => _EditSaleState();
 }
 
 final voucherCustomerName = TextEditingController();
@@ -33,19 +51,14 @@ final voucherCustomerContact = TextEditingController();
 String _clientSearch = "";
 List clients = [];
 
-var userEmail = FirebaseAuth.instance.currentUser?.email;
 GlobalKey salekey = GlobalKey();
-final saleCollection = FirebaseFirestore.instance
+final _saleCollection = FirebaseFirestore.instance
     .collection("book_data")
-<<<<<<< HEAD
-    .doc(userEmail)
-=======
     .doc("${user?.email}")
->>>>>>> 2725ff5aa6a5551e29f7b53bc84c3d03efc60c11
     .collection("sales");
 double totalamount = 0;
 
-class _SaleState extends State<Sale> {
+class _EditSaleState extends State<EditSale> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
   String voucherDate = "";
   double top = -500;
@@ -67,9 +80,14 @@ class _SaleState extends State<Sale> {
   void initState() {
     voucherDate = dateformat.format(DateTime.now());
     setState(() {
+      itemList = widget.edititems;
+      voucherCustomerName.text = widget.customerName.toString();
+      voucherCustomerContact.text = widget.customerContact.toString();
+      voucherDate = dateformat.format(widget.voucherDate);
+      saleNumber = int.parse(widget.voucherSaleNumber.toString());
+      paymentvalue = widget.value.toString();
       totaldiscountlist.clear();
       totalsubamount.clear();
-      itemList.clear();
     });
     updateTotal();
     super.initState();
@@ -104,7 +122,7 @@ class _SaleState extends State<Sale> {
   }
 
   Future saveBill() async {
-    saleCollection.doc().set({
+    _saleCollection.doc(widget.docid).set({
       "customerName": voucherCustomerName.text,
       "saleNumber": saleNumber,
       "orderCompleted": false,
@@ -149,7 +167,7 @@ class _SaleState extends State<Sale> {
                 children: [
                   Expanded(
                       child: StreamBuilder(
-                          stream: saleCollection.snapshots(),
+                          stream: _saleCollection.snapshots(),
                           builder:
                               (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                             return TextButton(
@@ -531,22 +549,15 @@ class _SaleState extends State<Sale> {
                     height: 60,
                     child: TextButton(
                       onPressed: () {
-                        saveBill().then((value) {
-                          setState(() {
-                            itemList.clear();
-                            totaldiscountlist.clear();
-                            totalsubamount.clear();
-                            voucherCustomerName.clear();
-                            voucherCustomerContact.clear();
-                            voucherclientNameNode.requestFocus();
-                            totalDiscount = 0;
-
-                            updateTotal();
-                          });
+                        _saleCollection
+                            .doc(widget.docid)
+                            .delete()
+                            .then((value) {
+                          Navigator.pop(context);
                         });
                       },
                       child: Text(
-                        "Save & New",
+                        "Delete",
                         style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -562,46 +573,47 @@ class _SaleState extends State<Sale> {
                               borderRadius: BorderRadius.circular(0))),
                       onPressed: () {
                         saveBill().then((value) async {
-                          StringBuffer istring = StringBuffer();
-
-                          for (var element in itemList) {
-                            istring.write(
-                                "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
-                          }
-                          String whatsapptext =
-                              "Hey!! Here's your bill ${voucherCustomerName.text}\n"
-                              "order number : $saleNumber\n"
-                              "-----------------------------------------\n $istring\n"
-                              "-----------------------------------------\n"
-                              "_discount : $totalDiscount %_ *Total : ₹ $totalamount* \n\n"
-                              "Thanks for visiting *Chapters of Diet*!";
-                          final whatsapplink = await WhatsAppUnilink(
-                              phoneNumber: "+91${voucherCustomerContact.text}",
-                              text: whatsapptext);
-                          // ignore: deprecated_member_use
-                          await launch('$whatsapplink');
-                          setState(() {
-                            itemList.clear();
-                            totaldiscountlist.clear();
-                            totalsubamount.clear();
-                            voucherCustomerName.clear();
-                            voucherCustomerContact.clear();
-                            voucherclientNameNode.requestFocus();
-                            totalDiscount = 0;
-
-                            updateTotal();
-                          });
+                          updateTotal();
                         });
                       },
                       child: Text(
-                        "Save & Send",
+                        "Update",
                         style: GoogleFonts.inter(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
+                  width: 70,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.whatsapp,
+                      color: Colors.indigo.shade700,
+                    ),
+                    onPressed: () async {
+                      StringBuffer istring = StringBuffer();
+
+                      for (var element in itemList) {
+                        istring.write(
+                            "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
+                      }
+                      String whatsapptext =
+                          "Hey!! Here's your bill ${voucherCustomerName.text}\n"
+                          "order number : $saleNumber\n"
+                          "-----------------------------------------\n $istring\n"
+                          "-----------------------------------------\n"
+                          "_discount : $totalDiscount %_ *Total : ₹ $totalamount* \n\n"
+                          "Thanks for visiting *Chapters of Diet*!";
+                      final whatsapplink = await WhatsAppUnilink(
+                          phoneNumber: "+91${voucherCustomerContact.text}",
+                          text: whatsapptext);
+                      // ignore: deprecated_member_use
+                      await launch('$whatsapplink');
+                    },
+                  ),
+                ),
+                SizedBox(
                   width: 50,
                   child: IconButton(
                     icon: Icon(
