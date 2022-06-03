@@ -35,18 +35,29 @@ class _SaleState extends State<Sale> {
   double itemsubtotal = 0;
   List<double> totaldiscountlist = [];
   List<double> totalsubamount = [];
+
+  Future updateTotal() async {
+    totaldiscountlist = [];
+    totalsubamount = [];
+    itemList.forEach((element) {
+      totaldiscountlist.add(element.discount);
+      totalsubamount.add(element.subtotal);
+      itemsubtotal = totalsubamount.sum;
+      totalDiscount = totaldiscountlist.sum;
+    });
+    setState(() {});
+  }
+
+  Future deleteItem(e) async {
+    itemList.remove(e);
+    setState(() {});
+  }
+
   @override
   void initState() {
-    voucherDate = dateformat.format(DateTime.now());
-    itemList.forEach((element) {
-      setState(() {
-        totaldiscountlist.insert(itemList.indexOf(element), element.discount);
-        totalsubamount.insert(itemList.indexOf(element), element.subtotal);
-        itemsubtotal = totalsubamount.sum;
-        totalDiscount = totaldiscountlist.sum;
-      });
-    });
     super.initState();
+    voucherDate = dateformat.format(DateTime.now());
+    updateTotal();
   }
 
   GlobalKey searchKeu = GlobalKey();
@@ -216,30 +227,6 @@ class _SaleState extends State<Sale> {
                                                     refresh: () {
                                                       setState(() {
                                                         itemList.remove(e);
-                                                        itemList
-                                                            .forEach((element) {
-                                                          setState(() {
-                                                            itemList.forEach(
-                                                                (element) {
-                                                              totaldiscountlist.insert(
-                                                                  itemList.indexOf(
-                                                                      element),
-                                                                  element
-                                                                      .discount);
-                                                              totalsubamount.insert(
-                                                                  itemList.indexOf(
-                                                                      element),
-                                                                  element
-                                                                      .subtotal);
-                                                              itemsubtotal =
-                                                                  totalsubamount
-                                                                      .sum;
-                                                              totalDiscount =
-                                                                  totaldiscountlist
-                                                                      .sum;
-                                                            });
-                                                          });
-                                                        });
                                                       });
                                                     })));
                                   },
@@ -406,7 +393,8 @@ class _SaleState extends State<Sale> {
                                                       });
                                                     });
                                                   },
-                                                )));
+                                                ))).then(
+                                        (value) => updateTotal());
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,

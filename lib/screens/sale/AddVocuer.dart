@@ -502,6 +502,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                             _voucherItemUnitcontoller.clear();
                             _voucherItemQuantityController.clear();
                             _voucherItemDiscountController.clear();
+
                             Navigator.pop(context);
                           },
                           child: Text(
