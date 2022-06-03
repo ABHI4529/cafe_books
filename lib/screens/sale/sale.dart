@@ -49,6 +49,12 @@ class _SaleState extends State<Sale> {
   @override
   void initState() {
     voucherDate = dateformat.format(DateTime.now());
+    super.initState();
+  }
+
+  Future updateTotal() async {
+    totaldiscountlist = [];
+    totalsubamount = [];
     itemList.forEach((element) {
       setState(() {
         totaldiscountlist.insert(itemList.indexOf(element), element.discount);
@@ -57,7 +63,6 @@ class _SaleState extends State<Sale> {
         totalDiscount = totaldiscountlist.sum;
       });
     });
-    super.initState();
   }
 
   GlobalKey searchKeu = GlobalKey();
@@ -462,32 +467,13 @@ class _SaleState extends State<Sale> {
                                         padding: const EdgeInsets.all(10)),
                                     onPressed: () {
                                       Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  VoucherItems(
-                                                    refresh: () {
-                                                      setState(() {
-                                                        itemList
-                                                            .forEach((element) {
-                                                          totaldiscountlist.insert(
-                                                              itemList.indexOf(
-                                                                  element),
-                                                              element.discount);
-                                                          totalsubamount.insert(
-                                                              itemList.indexOf(
-                                                                  element),
-                                                              element.subtotal);
-                                                          itemsubtotal =
-                                                              totalsubamount
-                                                                  .sum;
-                                                          totalDiscount =
-                                                              totaldiscountlist
-                                                                  .sum;
-                                                        });
-                                                      });
-                                                    },
-                                                  )));
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      VoucherItems(
+                                                        refresh: () {},
+                                                      )))
+                                          .then((value) => updateTotal());
                                     },
                                     child: Row(
                                       mainAxisAlignment:
