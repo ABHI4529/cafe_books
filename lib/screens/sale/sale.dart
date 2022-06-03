@@ -3,7 +3,7 @@ import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/screens/clients/addclient.dart';
 import 'package:cafe_books/screens/clients/clients.dart';
 import 'package:cafe_books/screens/sale/AddVocuer.dart';
-import 'package:cafe_books/screens/sale/editvoucher.dart';
+import 'package:cafe_books/screens/sale/edititem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
