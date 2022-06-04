@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../main.dart';
 import '../screens/clients/clients.dart';
 import '../screens/sale/sale.dart';
+import '../screens/stock/stock.dart';
 
 class CDrawer extends StatefulWidget {
   const CDrawer({Key? key}) : super(key: key);
@@ -158,7 +159,10 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Stock()));
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,

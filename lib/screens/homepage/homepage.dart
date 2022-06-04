@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                             builder: (context,
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               List<double> _totalSale = [];
-                              snapshot.data!.docs.forEach((e) {
+                              snapshot.data?.docs.forEach((e) {
                                 _totalSale.add(
                                     double.parse(e['totalSale'].toString()));
                               });

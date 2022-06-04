@@ -30,11 +30,13 @@ class EditSale extends StatefulWidget {
   int? voucherSaleNumber;
   DateTime voucherDate;
   double? totaldiscount;
+  int? orderNumber;
   String? value;
   EditSale(
       {Key? key,
       required this.edititems,
       this.voucherSaleNumber,
+      this.orderNumber,
       required this.voucherDate,
       this.value,
       this.totaldiscount,
@@ -76,6 +78,7 @@ class _EditSaleState extends State<EditSale> {
   final FocusNode _numberfocus = FocusNode();
   final FocusNode _voucherNumberfocus = FocusNode();
   double width = 100;
+  int _orderNumber = 1;
 
   var voucherclientNameNode = FocusNode();
   @override
@@ -138,13 +141,14 @@ class _EditSaleState extends State<EditSale> {
   }
 
   Future saveBill() async {
-    saleCollection.doc().set({
+    saleCollection.doc(widget.docid).set({
       "customerName": voucherCustomerName.text,
       "saleNumber": saleNumber,
       "orderCompleted": false,
       "customerContact": voucherCustomerContact.text,
       "paymentMethod": paymentvalue,
       "date": voucherDateFull,
+      "orderNumber": _orderNumber,
       "discount": double.parse(voucherDiscountControler.text),
       "totalSale": totalamount,
       "Items": itemList.map((e) => e.toJson()).toList()
@@ -223,6 +227,7 @@ class _EditSaleState extends State<EditSale> {
                               ),
                             );
                           })),
+                  Text("Order No : $_orderNumber"),
                   Expanded(
                     child: TextButton(
                       style: TextButton.styleFrom(
@@ -664,7 +669,7 @@ class _EditSaleState extends State<EditSale> {
                               "${element.itemName} - ${element.itemQuantity} - ₹${element.rate} = ₹${element.subtotal}\n");
                         }
                         String whatsapptext =
-                            "Hey!! Here's your bill ${voucherCustomerName.text}, Your Order Number is *$saleNumber*\n\n"
+                            "Hey!! Here's your bill ${voucherCustomerName.text}, Your Order Number is *$_orderNumber*\n\n"
                             "-----------------------------------------------------\n$istring-----------------------------------------------------\n\n"
                             "Discount : $totalDiscount % -- *Total : ₹ $totalamount* \n\n"
                             "Thanks for visiting *Chapters of Diet*!";

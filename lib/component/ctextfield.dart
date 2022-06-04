@@ -7,11 +7,13 @@ class CTextField<T> extends StatefulWidget {
   FocusNode? focus;
   TextEditingController? controller;
   Widget? widgetPrefix;
+  int? maxline;
   Widget? prefix;
   ValueChanged<String>? onTextChanged;
   final Function(String)? onSubmit;
   CTextField(
       {Key? key,
+      this.maxline,
       this.focus,
       this.prefix,
       this.placeholder,
