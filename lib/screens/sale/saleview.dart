@@ -18,6 +18,11 @@ class SaleView extends StatefulWidget {
   State<SaleView> createState() => _SaleViewState();
 }
 
+final saleCollectionRef = FirebaseFirestore.instance
+    .collection("book_data")
+    .doc("abhinavgadekar4529@gmail.com")
+    .collection("sales");
+
 class _SaleViewState extends State<SaleView> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
   @override

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/datautil/saledatahandler.dart';
@@ -35,6 +34,7 @@ final voucherDiscountControler = TextEditingController(text: "0.0");
 String _clientSearch = "";
 List clients = [];
 
+var userEmail = FirebaseAuth.instance.currentUser?.email;
 GlobalKey salekey = GlobalKey();
 final saleCollection = FirebaseFirestore.instance
     .collection("book_data")
@@ -88,14 +88,14 @@ class _SaleState extends State<Sale> {
         totalamount = 0;
       });
     } else {
-      itemList.forEach((element) {
+      for (var element in itemList) {
         setState(() {
           totaldiscountlist.insert(itemList.indexOf(element), element.discount);
           totalsubamount.insert(itemList.indexOf(element), element.subtotal);
           _totalsubAmount = totalsubamount.sum;
           totalDiscount = totaldiscountlist.sum;
         });
-      });
+      }
       setState(() {
         totalamount = _totalsubAmount;
       });
@@ -633,17 +633,15 @@ class _SaleState extends State<Sale> {
 
                           for (var element in itemList) {
                             istring.write(
-                                "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
+                                "${element.itemName} - ${element.itemQuantity} - ₹${element.rate} = ₹${element.subtotal}\n");
                           }
 
                           String whatsapptext =
-                              "Hey!! Here's your bill ${voucherCustomerName.text}\n"
-                              "order number : $saleNumber\n"
-                              "-----------------------------------------\n $istring\n"
-                              "-----------------------------------------\n"
-                              "_discount : $totalDiscount %_ *Total : ₹ $totalamount* \n\n"
+                              "Hey!! Here's your bill ${voucherCustomerName.text}, Your Order Number is *$saleNumber*\n\n"
+                              "-----------------------------------------------------\n$istring-----------------------------------------------------\n\n"
+                              "Discount : $totalDiscount % -- *Total : ₹ $totalamount* \n\n"
                               "Thanks for visiting *Chapters of Diet*!";
-                          final whatsapplink = await WhatsAppUnilink(
+                          final whatsapplink = WhatsAppUnilink(
                               phoneNumber: "+91${voucherCustomerContact.text}",
                               text: whatsapptext);
                           // ignore: deprecated_member_use
@@ -656,7 +654,6 @@ class _SaleState extends State<Sale> {
                             voucherCustomerContact.clear();
                             voucherclientNameNode.requestFocus();
                             totalDiscount = 0;
-
                             updateTotal();
                             getvouchernumber();
                           });
@@ -670,7 +667,7 @@ class _SaleState extends State<Sale> {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 50,
                   child: IconButton(
                     icon: Icon(
@@ -737,7 +734,7 @@ class _SaleState extends State<Sale> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("${x.itemName}",
+                  Text(x.itemName,
                       style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
                   Text("₹ ${x.subtotal}",
                       style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
