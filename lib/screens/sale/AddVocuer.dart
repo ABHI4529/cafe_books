@@ -460,7 +460,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                                 double.parse(_voucherItemPriceController.text),
                                 double.parse(
                                     _voucherItemDiscountController.text),
-                                _subtotal,
+                                _total,
                               ));
                             });
                             _voucherItemNameController.clear();
@@ -492,8 +492,9 @@ class _VoucherItemsState extends State<VoucherItems> {
                                 double.parse(_voucherItemPriceController.text),
                                 double.parse(
                                     _voucherItemDiscountController.text),
-                                _subtotal,
+                                _total,
                               ));
+                              print(itemList[0].discount);
                             });
                             widget.refresh();
                             _voucherItemNameController.clear();
@@ -502,6 +503,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                             _voucherItemUnitcontoller.clear();
                             _voucherItemQuantityController.clear();
                             _voucherItemDiscountController.text = "0.0";
+
                             Navigator.pop(context);
                           },
                           child: Text(

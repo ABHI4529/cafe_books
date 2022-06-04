@@ -29,6 +29,7 @@ class EditSale extends StatefulWidget {
   String? customerContact;
   int? voucherSaleNumber;
   DateTime voucherDate;
+  double? totaldiscount;
   String? value;
   EditSale(
       {Key? key,
@@ -36,6 +37,7 @@ class EditSale extends StatefulWidget {
       this.voucherSaleNumber,
       required this.voucherDate,
       this.value,
+      this.totaldiscount,
       this.docid,
       this.customerContact,
       this.customerName})
@@ -84,6 +86,7 @@ class _EditSaleState extends State<EditSale> {
       voucherCustomerName.text = widget.customerName.toString();
       voucherCustomerContact.text = widget.customerContact.toString();
       voucherDate = dateformat.format(widget.voucherDate);
+      voucherDiscountControler.text = widget.totaldiscount.toString();
       saleNumber = int.parse(widget.voucherSaleNumber.toString());
       paymentvalue = widget.value.toString();
       totaldiscountlist.clear();
@@ -101,6 +104,7 @@ class _EditSaleState extends State<EditSale> {
     if (itemList.isEmpty) {
       setState(() {
         totaldiscountlist.clear();
+        voucherDiscountControler.text = "0.0";
         totalsubamount.clear();
         _totalsubAmount = 0;
         totalDiscount = 0;
@@ -116,19 +120,32 @@ class _EditSaleState extends State<EditSale> {
         });
       });
       setState(() {
-        totalamount = _totalsubAmount - (_totalsubAmount * totalDiscount / 100);
+        totalamount = _totalsubAmount;
       });
+      if (voucherDiscountControler.text.isEmpty) {
+        setState(() {
+          totalamount = _totalsubAmount;
+        });
+      } else {
+        setState(() {
+          totalamount = _totalsubAmount -
+              (_totalsubAmount *
+                  double.parse(voucherDiscountControler.text) /
+                  100);
+        });
+      }
     }
   }
 
   Future saveBill() async {
-    _saleCollection.doc(widget.docid).set({
+    saleCollection.doc().set({
       "customerName": voucherCustomerName.text,
       "saleNumber": saleNumber,
       "orderCompleted": false,
       "customerContact": voucherCustomerContact.text,
       "paymentMethod": paymentvalue,
       "date": voucherDateFull,
+      "discount": double.parse(voucherDiscountControler.text),
       "totalSale": totalamount,
       "Items": itemList.map((e) => e.toJson()).toList()
     });
@@ -312,9 +329,56 @@ class _EditSaleState extends State<EditSale> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          "Total Discount = $totalDiscount %",
-                                          style: GoogleFonts.inter(),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Add. Discount :",
+                                              style: GoogleFonts.inter(),
+                                            ),
+                                            SizedBox(
+                                              width: 130,
+                                              child: CTextField(
+                                                controller:
+                                                    voucherDiscountControler,
+                                                onTextChanged: (value) {
+                                                  if (value.isEmpty) {
+                                                    setState(() {
+                                                      totalamount =
+                                                          _totalsubAmount;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      totalamount =
+                                                          _totalsubAmount -
+                                                              (_totalsubAmount *
+                                                                  double.parse(
+                                                                      value) /
+                                                                  100);
+                                                    });
+                                                  }
+                                                },
+                                                widgetPrefix: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors
+                                                          .indigo.shade600,
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                                  .only(
+                                                              topRight: Radius
+                                                                  .circular(7),
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          7))),
+                                                  child: const Icon(
+                                                    Icons.percent,
+                                                    size: 13,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         Text(
                                           "Subtotal : ₹ $_totalsubAmount",

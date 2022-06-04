@@ -90,6 +90,8 @@ class _SaleViewState extends State<SaleView> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => EditSale(
+                                      totaldiscount: snapshot.data?.docs[index]
+                                          ['discount'],
                                       edititems: edititems,
                                       customerName: snapshot.data?.docs[index]
                                           ['customerName'],
@@ -154,7 +156,38 @@ class _SaleViewState extends State<SaleView> {
                                   child: Row(
                                     children: [
                                       IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        EditSale(
+                                                          totaldiscount: snapshot
+                                                                  .data
+                                                                  ?.docs[index]
+                                                              ['discount'],
+                                                          edititems: edititems,
+                                                          customerName: snapshot
+                                                                  .data
+                                                                  ?.docs[index]
+                                                              ['customerName'],
+                                                          docid: snapshot.data
+                                                              ?.docs[index].id,
+                                                          value: snapshot.data
+                                                                  ?.docs[index]
+                                                              ['paymentMethod'],
+                                                          voucherSaleNumber:
+                                                              snapshot.data
+                                                                          ?.docs[
+                                                                      index][
+                                                                  'saleNumber'],
+                                                          voucherDate: d,
+                                                          customerContact: snapshot
+                                                                  .data
+                                                                  ?.docs[index][
+                                                              'customerContact'],
+                                                        )));
+                                          },
                                           icon: const Icon(Icons.whatsapp)),
                                       IconButton(
                                           onPressed: () {},

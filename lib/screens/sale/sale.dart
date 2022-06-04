@@ -31,6 +31,7 @@ class Sale extends StatefulWidget {
 final voucherCustomerName = TextEditingController();
 final voucherSaleNumber = TextEditingController();
 final voucherCustomerContact = TextEditingController();
+final voucherDiscountControler = TextEditingController(text: "0.0");
 String _clientSearch = "";
 List clients = [];
 
@@ -67,6 +68,7 @@ class _SaleState extends State<Sale> {
       totalsubamount.clear();
       itemList.clear();
     });
+    getvouchernumber();
     updateTotal();
     super.initState();
   }
@@ -79,6 +81,7 @@ class _SaleState extends State<Sale> {
     if (itemList.isEmpty) {
       setState(() {
         totaldiscountlist.clear();
+        voucherDiscountControler.text = "0.0";
         totalsubamount.clear();
         _totalsubAmount = 0;
         totalDiscount = 0;
@@ -94,9 +97,28 @@ class _SaleState extends State<Sale> {
         });
       });
       setState(() {
-        totalamount = _totalsubAmount - (_totalsubAmount * totalDiscount / 100);
+        totalamount = _totalsubAmount;
       });
+      if (voucherDiscountControler.text.isEmpty) {
+        setState(() {
+          totalamount = _totalsubAmount;
+        });
+      } else {
+        setState(() {
+          totalamount = _totalsubAmount -
+              (_totalsubAmount *
+                  double.parse(voucherDiscountControler.text) /
+                  100);
+        });
+      }
     }
+  }
+
+  Future getvouchernumber() async {
+    QuerySnapshot snap = await saleCollection.get();
+    setState(() {
+      saleNumber = snap.docs.length + 1;
+    });
   }
 
   Future saveBill() async {
@@ -107,6 +129,7 @@ class _SaleState extends State<Sale> {
       "customerContact": voucherCustomerContact.text,
       "paymentMethod": paymentvalue,
       "date": voucherDateFull,
+      "discount": double.parse(voucherDiscountControler.text),
       "totalSale": totalamount,
       "Items": itemList.map((e) => e.toJson()).toList()
     });
@@ -290,9 +313,56 @@ class _SaleState extends State<Sale> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          "Total Discount = $totalDiscount %",
-                                          style: GoogleFonts.inter(),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Add. Discount :",
+                                              style: GoogleFonts.inter(),
+                                            ),
+                                            SizedBox(
+                                              width: 130,
+                                              child: CTextField(
+                                                controller:
+                                                    voucherDiscountControler,
+                                                onTextChanged: (value) {
+                                                  if (value.isEmpty) {
+                                                    setState(() {
+                                                      totalamount =
+                                                          _totalsubAmount;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      totalamount =
+                                                          _totalsubAmount -
+                                                              (_totalsubAmount *
+                                                                  double.parse(
+                                                                      value) /
+                                                                  100);
+                                                    });
+                                                  }
+                                                },
+                                                widgetPrefix: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors
+                                                          .indigo.shade600,
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                                  .only(
+                                                              topRight: Radius
+                                                                  .circular(7),
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          7))),
+                                                  child: const Icon(
+                                                    Icons.percent,
+                                                    size: 13,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         Text(
                                           "Subtotal : ₹ $_totalsubAmount",
@@ -538,6 +608,7 @@ class _SaleState extends State<Sale> {
                             totalDiscount = 0;
 
                             updateTotal();
+                            getvouchernumber();
                           });
                         });
                       },
@@ -564,6 +635,7 @@ class _SaleState extends State<Sale> {
                             istring.write(
                                 "${element.itemName} || ${element.itemQuantity} || ₹ ${element.rate} || ₹ ${element.subtotal} \n");
                           }
+
                           String whatsapptext =
                               "Hey!! Here's your bill ${voucherCustomerName.text}\n"
                               "order number : $saleNumber\n"
@@ -586,6 +658,7 @@ class _SaleState extends State<Sale> {
                             totalDiscount = 0;
 
                             updateTotal();
+                            getvouchernumber();
                           });
                         });
                       },
@@ -695,7 +768,7 @@ class _SaleState extends State<Sale> {
                     style: GoogleFonts.inter(color: Colors.indigo),
                   ),
                   Text(
-                    "₹ ${x.subtotal - (x.subtotal - (x.subtotal * x.discount / 100))}",
+                    "₹ ${(x.rate * x.itemQuantity) - x.subtotal}",
                     style: GoogleFonts.inter(color: Colors.indigo),
                   )
                 ],

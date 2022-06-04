@@ -107,13 +107,7 @@ class _LoginState extends State<Login> {
                                 child: Text("Login",
                                     style:
                                         GoogleFonts.inter(color: Colors.white)),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomePage()));
-                                },
+                                onPressed: () {},
                               );
                             }),
                       ),

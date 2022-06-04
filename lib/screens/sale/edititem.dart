@@ -511,7 +511,7 @@ class _EditVoucherItemsState extends State<EditVoucherItems> {
                                 double.parse(_voucherItemPriceController.text),
                                 double.parse(
                                     _voucherItemDiscountController.text),
-                                subtotal,
+                                total,
                               );
                             });
                             setState(() {
