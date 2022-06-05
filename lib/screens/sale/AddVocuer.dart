@@ -451,7 +451,6 @@ class _VoucherItemsState extends State<VoucherItems> {
                       height: 60,
                       child: TextButton(
                           onPressed: () {
-                            widget.refresh();
                             setState(() {
                               itemList.add(SaleHandler(
                                 _voucherItemNameController.text,

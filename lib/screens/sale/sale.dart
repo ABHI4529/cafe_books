@@ -58,6 +58,7 @@ class _SaleState extends State<Sale> {
   final FocusNode _numberfocus = FocusNode();
   final FocusNode _voucherNumberfocus = FocusNode();
   double width = 100;
+  int _orderNumber = 1;
 
   var voucherclientNameNode = FocusNode();
   @override
@@ -116,8 +117,16 @@ class _SaleState extends State<Sale> {
 
   Future getvouchernumber() async {
     QuerySnapshot snap = await saleCollection.get();
+    DateTime now = DateTime.now();
+    DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
+    Timestamp tFrom = Timestamp.fromDate(yesterday);
+    Timestamp tTo = Timestamp.fromDate(now);
+    QuerySnapshot orderNumber = await saleCollection
+        .where("date", isLessThan: tTo, isGreaterThan: tFrom)
+        .get();
     setState(() {
       saleNumber = snap.docs.length + 1;
+      _orderNumber = orderNumber.docs.length + 1;
     });
   }
 
@@ -129,6 +138,7 @@ class _SaleState extends State<Sale> {
       "customerContact": voucherCustomerContact.text,
       "paymentMethod": paymentvalue,
       "date": voucherDateFull,
+      "orderNumber": _orderNumber,
       "discount": double.parse(voucherDiscountControler.text),
       "totalSale": totalamount,
       "Items": itemList.map((e) => e.toJson()).toList()
@@ -207,6 +217,7 @@ class _SaleState extends State<Sale> {
                               ),
                             );
                           })),
+                  Text("Order No : $_orderNumber"),
                   Expanded(
                     child: TextButton(
                       style: TextButton.styleFrom(
@@ -637,7 +648,7 @@ class _SaleState extends State<Sale> {
                           }
 
                           String whatsapptext =
-                              "Hey!! Here's your bill ${voucherCustomerName.text}, Your Order Number is *$saleNumber*\n\n"
+                              "Hey!! Here's your bill ${voucherCustomerName.text}, Your Order Number is *$_orderNumber*\n\n"
                               "-----------------------------------------------------\n$istring-----------------------------------------------------\n\n"
                               "Discount : $totalDiscount % -- *Total : ₹ $totalamount* \n\n"
                               "Thanks for visiting *Chapters of Diet*!";

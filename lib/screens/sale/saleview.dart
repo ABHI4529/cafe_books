@@ -95,6 +95,8 @@ class _SaleViewState extends State<SaleView> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => EditSale(
+                                      orderNumber: snapshot.data?.docs[index]
+                                          ['orderNumber'],
                                       totaldiscount: snapshot.data?.docs[index]
                                           ['discount'],
                                       edititems: edititems,
