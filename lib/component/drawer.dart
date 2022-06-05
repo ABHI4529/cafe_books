@@ -2,6 +2,7 @@ import 'package:cafe_books/screens/auth/social-auth.dart';
 import 'package:cafe_books/screens/expense/expense.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cafe_books/screens/items/items.dart';
+import 'package:cafe_books/screens/kitchen/kitchen.dart';
 import 'package:cafe_books/screens/sale/saleview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -233,12 +234,11 @@ class _CDrawerState extends State<CDrawer> {
             ),
           ),
           TextButton(
-            onPressed: () async {
-              await FirebaseServices().googleSignOut();
+            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Login(),
+                  builder: (context) => Kitchen(),
                 ),
               );
             },
@@ -257,6 +257,37 @@ class _CDrawerState extends State<CDrawer> {
                     margin: const EdgeInsets.only(left: 30),
                     child: Text(
                       "Kitchen",
+                      style: GoogleFonts.inter(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              await FirebaseServices().googleSignOut();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Login(),
+                ),
+              );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    child: const Icon(
+                      FontAwesomeIcons.arrowRightFromBracket,
+                      color: Colors.grey,
+                      size: 20,
+                    )),
+                Container(
+                    margin: const EdgeInsets.only(left: 30),
+                    child: Text(
+                      "Logout",
                       style: GoogleFonts.inter(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ))
