@@ -20,7 +20,7 @@ class SaleView extends StatefulWidget {
 
 final saleCollectionRef = FirebaseFirestore.instance
     .collection("book_data")
-    .doc("abhinavgadekar4529@gmail.com")
+    .doc("$userEmail")
     .collection("sales");
 
 class _SaleViewState extends State<SaleView> {
