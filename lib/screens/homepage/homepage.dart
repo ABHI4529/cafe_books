@@ -73,8 +73,7 @@ class _HomePageState extends State<HomePage> {
                                 AsyncSnapshot<QuerySnapshot> snapshot) {
                               List<double> _totalSale = [];
                               snapshot.data?.docs.forEach((e) {
-                                _totalSale.add(
-                                    double.parse(e['totalSale'].toString()));
+                                _totalSale.add(e['totalSale']);
                               });
                               if (!snapshot.hasData) {
                                 return const Center(

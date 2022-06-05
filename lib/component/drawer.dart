@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cafe_books/screens/auth/social-auth.dart';
 import 'package:cafe_books/screens/expense/expense.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
@@ -270,12 +272,13 @@ class _CDrawerState extends State<CDrawer> {
           TextButton(
             onPressed: () async {
               await FirebaseServices().googleSignOut();
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => Login(),
                 ),
               );
+              exit(1);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,

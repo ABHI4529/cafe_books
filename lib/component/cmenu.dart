@@ -1,9 +1,15 @@
 import 'dart:ffi';
 
+import 'package:cafe_books/screens/clients/addclient.dart';
+import 'package:cafe_books/screens/expense/addexpense.dart';
+import 'package:cafe_books/screens/items/additem.dart';
+import 'package:cafe_books/screens/items/items.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../screens/sale/sale.dart';
 
 class CMenu extends StatefulWidget {
   const CMenu({Key? key}) : super(key: key);
@@ -34,13 +40,19 @@ class _CMenuState extends State<CMenu> with TickerProviderStateMixin {
       fabChild: icon,
       children: [
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Sale()));
+          },
           child: Text("Sale",
               style: GoogleFonts.inter(
                   color: Colors.white, fontWeight: FontWeight.bold)),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AddExpense()));
+          },
           child: Text(
             "Expense",
             style: GoogleFonts.inter(
@@ -56,7 +68,10 @@ class _CMenuState extends State<CMenu> with TickerProviderStateMixin {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AddClient()));
+          },
           child: Text(
             "Clients",
             style: GoogleFonts.inter(
@@ -64,7 +79,10 @@ class _CMenuState extends State<CMenu> with TickerProviderStateMixin {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AddItem()));
+          },
           child: Text(
             "Items",
             style: GoogleFonts.inter(
