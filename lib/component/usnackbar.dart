@@ -6,6 +6,7 @@ class USnackbar extends SnackBar {
   Color? color;
   USnackbar({Key? key, this.color, required this.message})
       : super(
+            behavior: SnackBarBehavior.floating,
             key: key,
             content: Text(
               message,

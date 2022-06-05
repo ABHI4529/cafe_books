@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/stextfield.dart';
+import 'package:cafe_books/component/usnackbar.dart';
 import 'package:cafe_books/datautil/saledatahandler.dart';
 import 'package:cafe_books/screens/clients/addclient.dart';
 import 'package:cafe_books/screens/clients/clients.dart';
@@ -94,6 +95,7 @@ class _EditSaleState extends State<EditSale> {
       paymentvalue = widget.value.toString();
       totaldiscountlist.clear();
       totalsubamount.clear();
+      _orderNumber = widget.orderNumber!;
     });
     updateTotal();
     super.initState();
@@ -643,6 +645,12 @@ class _EditSaleState extends State<EditSale> {
                       onPressed: () {
                         saveBill().then((value) async {
                           updateTotal();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            USnackbar(
+                              message: "Bill Updated",
+                              color: Colors.indigo.shade800,
+                            ),
+                          );
                         });
                       },
                       child: Text(

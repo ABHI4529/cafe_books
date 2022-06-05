@@ -469,6 +469,7 @@ class _VoucherItemsState extends State<VoucherItems> {
                             _voucherItemQuantityController.clear();
                             _voucherItemDiscountController.text = "0.0";
                             itemNameNode.requestFocus();
+                            widget.refresh();
                           },
                           child: Text(
                             "Save & New",
