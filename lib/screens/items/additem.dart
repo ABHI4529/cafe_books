@@ -2,6 +2,7 @@ import 'package:cafe_books/component/cmenu.dart';
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/stextfield.dart';
 import 'package:cafe_books/component/usnackbar.dart';
+import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ final TextEditingController itemDescriptionController = TextEditingController();
 
 final itemCollectionRef = FirebaseFirestore.instance
     .collection("book_data")
-    .doc("abhinavgadekar4529@gmail.com")
+    .doc("${user?.email}")
     .collection("items");
 
 class _AddItemState extends State<AddItem> {

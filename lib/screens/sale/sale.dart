@@ -30,6 +30,7 @@ class Sale extends StatefulWidget {
 final voucherCustomerName = TextEditingController();
 final voucherSaleNumber = TextEditingController();
 final voucherCustomerContact = TextEditingController();
+final _totalamountreceived = TextEditingController();
 final voucherDiscountControler = TextEditingController(text: "0.0");
 String _clientSearch = "";
 List clients = [];
@@ -75,6 +76,9 @@ class _SaleState extends State<Sale> {
   }
 
   double _totalsubAmount = 0;
+  bool amountgo = true;
+
+  Future udpdateClosintBalance() async {}
 
   Future updateTotal() async {
     totaldiscountlist = [];
@@ -113,6 +117,9 @@ class _SaleState extends State<Sale> {
         });
       }
     }
+    if (amountgo) {
+      _totalamountreceived.text = totalamount.toString();
+    }
   }
 
   Future getvouchernumber() async {
@@ -130,11 +137,22 @@ class _SaleState extends State<Sale> {
     });
   }
 
+  String _clientID = "";
+  double existingCl = 0;
+
+  Future updateClosingBal(String clientID, double existingCl) async {
+    clientCollectionRef.doc(clientID).update({
+      "closing":
+          existingCl + (totalamount - double.parse(_totalamountreceived.text))
+    });
+  }
+
   Future saveBill() async {
     saleCollection.doc().set({
       "customerName": voucherCustomerName.text,
       "saleNumber": saleNumber,
       "orderCompleted": false,
+      "amountRecevied": double.parse(_totalamountreceived.text),
       "customerContact": voucherCustomerContact.text,
       "paymentMethod": paymentvalue,
       "date": voucherDateFull,
@@ -493,7 +511,64 @@ class _SaleState extends State<Sale> {
                                 ),
                               ),
                               Container(
-                                height: 200,
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                    Row(
+                                      children: [
+                                        Checkbox(
+                                            value: amountgo,
+                                            onChanged: (value) async {
+                                              setState(() {
+                                                amountgo = value as bool;
+                                              });
+                                              if (amountgo) {
+                                                _totalamountreceived.text =
+                                                    totalamount.toString();
+                                              }
+                                            }),
+                                        Text("Received",
+                                            style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.bold))
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 200,
+                                      child: CTextField(
+                                        widgetPrefix: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.indigo.shade600,
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                      topRight:
+                                                          Radius.circular(7),
+                                                      bottomRight:
+                                                          Radius.circular(7))),
+                                          child: const Icon(
+                                            Icons.currency_rupee,
+                                            size: 13,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        onTextChanged: (value) {
+                                          if (value != totalamount.toString()) {
+                                            setState(() {
+                                              amountgo = false;
+                                            });
+                                          } else {
+                                            setState(() {
+                                              amountgo = true;
+                                            });
+                                          }
+                                        },
+                                        controller: _totalamountreceived,
+                                        placeholder: "Total Received",
+                                      ),
+                                    )
+                                  ])),
+                              Container(
+                                height: 300,
                               )
                             ],
                           ),
@@ -554,31 +629,43 @@ class _SaleState extends State<Sale> {
                                                 "${e['clientName']}";
                                             voucherCustomerContact.text =
                                                 "${e['clientContact']}";
+                                            _clientID = "${e.id}";
+                                            existingCl =
+                                                double.parse("${e['closing']}");
                                           });
                                           _numberfocus.requestFocus();
                                         },
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        title: Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(
-                                              "${e['clientName']}",
-                                              style: GoogleFonts.inter(),
+                                            Container(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "${e['clientName']}",
+                                                    style: GoogleFonts.inter(),
+                                                  ),
+                                                  Text(
+                                                    "Contact: ${e['clientContact']}",
+                                                    style: GoogleFonts.inter(
+                                                        fontSize: 10,
+                                                        fontStyle:
+                                                            FontStyle.italic),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                             Text(
-                                              "Contact: ${e['clientContact']}",
+                                              "₹ ${e['closing']}",
                                               style: GoogleFonts.inter(
-                                                  fontSize: 10,
-                                                  fontStyle: FontStyle.italic),
-                                            ),
+                                                  fontWeight: FontWeight.bold),
+                                            )
                                           ],
-                                        ),
-                                        trailing: Text(
-                                          "₹ ${e['clientBalance']}",
-                                          style: GoogleFonts.inter(
-                                              fontWeight: FontWeight.bold),
                                         ),
                                       );
                                     }).toList(),
@@ -608,6 +695,7 @@ class _SaleState extends State<Sale> {
                     height: 60,
                     child: TextButton(
                       onPressed: () {
+                        updateClosingBal(_clientID, existingCl);
                         saveBill().then((value) {
                           setState(() {
                             itemList.clear();
@@ -617,6 +705,7 @@ class _SaleState extends State<Sale> {
                             voucherCustomerContact.clear();
                             voucherclientNameNode.requestFocus();
                             totalDiscount = 0;
+                            _totalamountreceived.clear();
 
                             updateTotal();
                             getvouchernumber();
@@ -639,6 +728,7 @@ class _SaleState extends State<Sale> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(0))),
                       onPressed: () {
+                        updateClosingBal(_clientID, existingCl);
                         saveBill().then((value) async {
                           StringBuffer istring = StringBuffer();
 
@@ -665,6 +755,7 @@ class _SaleState extends State<Sale> {
                             voucherCustomerContact.clear();
                             voucherclientNameNode.requestFocus();
                             totalDiscount = 0;
+                            _totalamountreceived.clear();
                             updateTotal();
                             getvouchernumber();
                           });

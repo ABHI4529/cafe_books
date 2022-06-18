@@ -1,5 +1,6 @@
 import 'package:cafe_books/component/ctextfield.dart';
 import 'package:cafe_books/component/usnackbar.dart';
+import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class AddExpense extends StatefulWidget {
 
 final expenseCollectionRef = FirebaseFirestore.instance
     .collection("book_data")
-    .doc("abhinavgadekar4529@gmail.com")
+    .doc("${user?.email}")
     .collection("expenses");
 
 final expenseNameController = TextEditingController();

@@ -28,6 +28,7 @@ class _AddClientState extends State<AddClient> {
     clientCollectionRef.doc().set({
       "clientName": clientNameController.text,
       "clientContact": clientContactController.text,
+      "closing": 0.0,
       "clientBalance": clientBalanceController.text,
       "dateCreated": DateTime.now()
     });

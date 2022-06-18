@@ -29,6 +29,7 @@ class EditSale extends StatefulWidget {
   String? customerName;
   String? customerContact;
   int? voucherSaleNumber;
+  double? totalAmountReceived;
   DateTime voucherDate;
   double? totaldiscount;
   int? orderNumber;
@@ -41,6 +42,7 @@ class EditSale extends StatefulWidget {
       required this.voucherDate,
       this.value,
       this.totaldiscount,
+      this.totalAmountReceived,
       this.docid,
       this.customerContact,
       this.customerName})
@@ -50,6 +52,7 @@ class EditSale extends StatefulWidget {
   State<EditSale> createState() => _EditSaleState();
 }
 
+bool amountgo = true;
 final voucherCustomerName = TextEditingController();
 final voucherSaleNumber = TextEditingController();
 final voucherCustomerContact = TextEditingController();
@@ -71,6 +74,7 @@ class _EditSaleState extends State<EditSale> {
   double itemsubtotal = 0;
   List<double> totaldiscountlist = [];
   List<double> totalsubamount = [];
+  final _totalamountreceived = TextEditingController();
   String paymentvalue = "cash";
   DateTime voucherDateFull = DateTime.now();
 
@@ -95,6 +99,7 @@ class _EditSaleState extends State<EditSale> {
       paymentvalue = widget.value.toString();
       totaldiscountlist.clear();
       totalsubamount.clear();
+      _totalamountreceived.text = widget.totalAmountReceived.toString();
       _orderNumber = widget.orderNumber!;
     });
     updateTotal();
@@ -149,6 +154,7 @@ class _EditSaleState extends State<EditSale> {
       "orderCompleted": false,
       "customerContact": voucherCustomerContact.text,
       "paymentMethod": paymentvalue,
+      "amountRecevied": double.parse(_totalamountreceived.text),
       "date": voucherDateFull,
       "orderNumber": _orderNumber,
       "discount": double.parse(voucherDiscountControler.text),
@@ -505,7 +511,64 @@ class _EditSaleState extends State<EditSale> {
                                 ),
                               ),
                               Container(
-                                height: 200,
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                    Row(
+                                      children: [
+                                        Checkbox(
+                                            value: amountgo,
+                                            onChanged: (value) async {
+                                              setState(() {
+                                                amountgo = value as bool;
+                                              });
+                                              if (amountgo) {
+                                                _totalamountreceived.text =
+                                                    totalamount.toString();
+                                              }
+                                            }),
+                                        Text("Received",
+                                            style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.bold))
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 200,
+                                      child: CTextField(
+                                        widgetPrefix: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.indigo.shade600,
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                      topRight:
+                                                          Radius.circular(7),
+                                                      bottomRight:
+                                                          Radius.circular(7))),
+                                          child: const Icon(
+                                            Icons.currency_rupee,
+                                            size: 13,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        onTextChanged: (value) {
+                                          if (value != totalamount.toString()) {
+                                            setState(() {
+                                              amountgo = false;
+                                            });
+                                          } else {
+                                            setState(() {
+                                              amountgo = true;
+                                            });
+                                          }
+                                        },
+                                        controller: _totalamountreceived,
+                                        placeholder: "Total Received",
+                                      ),
+                                    )
+                                  ])),
+                              Container(
+                                height: 300,
                               )
                             ],
                           ),

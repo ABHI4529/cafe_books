@@ -1,4 +1,5 @@
 import 'package:cafe_books/component/ctextfield.dart';
+import 'package:cafe_books/component/usnackbar.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,14 +7,28 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AddStockItem extends StatefulWidget {
-  AddStockItem({Key? key}) : super(key: key);
+class EditStockItem extends StatefulWidget {
+  String? itemID;
+  String? itemName;
+  String? itemPrice;
+  String? itemUnit;
+  int? opBal;
+  String? description;
+  EditStockItem(
+      {Key? key,
+      this.itemID,
+      this.itemName,
+      this.itemPrice,
+      this.itemUnit,
+      this.description,
+      this.opBal})
+      : super(key: key);
 
   @override
-  State<AddStockItem> createState() => _AddStockItemState();
+  State<EditStockItem> createState() => _EditStockItemState();
 }
 
-class _AddStockItemState extends State<AddStockItem> {
+class _EditStockItemState extends State<EditStockItem> {
   double _top = -500;
   double width = 0;
   final GlobalKey _unitKey = GlobalKey();
@@ -47,7 +62,7 @@ class _AddStockItemState extends State<AddStockItem> {
       .collection("stock");
 
   Future saveStock() async {
-    await _stockRef.doc().set({
+    await _stockRef.doc(widget.itemID).update({
       "stockItemName": _stockItemName.text,
       "stockItemUnit": _stockItemUnit.text,
       "stockItemPrice": double.parse(_stockItemPrice.text),
@@ -58,9 +73,18 @@ class _AddStockItemState extends State<AddStockItem> {
     });
   }
 
+  Future deleteItem() async {
+    _stockRef.doc(widget.itemID).delete();
+  }
+
   @override
   void initState() {
     setState(() {
+      _stockItemName.text = widget.itemName!;
+      _stockItemBal.text = widget.opBal.toString();
+      _stockItemDescription.text = widget.description!;
+      _stockItemUnit.text = widget.itemUnit!;
+      _stockItemPrice.text = widget.itemPrice!;
       _filterunitlist = _unitList;
     });
     super.initState();
@@ -238,24 +262,14 @@ class _AddStockItemState extends State<AddStockItem> {
                   height: 60,
                   child: TextButton(
                     onPressed: () {
-                      if (_stockItemBal.text.isEmpty) {
-                        setState(() {
-                          _stockItemBal.text = "0";
-                        });
-                      }
-                      saveStock().then((value) {
-                        setState(() {
-                          _stockItemName.clear();
-                          _stockItemUnit.clear();
-                          _stockItemPrice.clear();
-                          _stockItemBal.clear();
-                          _stockItemDescription.clear();
-                        });
-                        _itemNameNode.requestFocus();
+                      deleteItem().then((value) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            USnackbar(message: "Stock Item Deleted"));
                       });
                     },
                     child: Text(
-                      'Save & New',
+                      'Delete',
                       style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                     ),
                   ),

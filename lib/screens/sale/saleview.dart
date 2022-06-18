@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cafe_books/screens/receipt/recipt.dart';
 import 'package:cafe_books/screens/sale/sale.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,39 @@ class _SaleViewState extends State<SaleView> {
               Navigator.pop(context);
             },
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Receipt()));
+                },
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  primary: Colors.white.withOpacity(0.6),
+                  backgroundColor: Colors.white.withOpacity(0.6),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      "Add Receipt  ",
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: Colors.indigo.shade800,
+                      ),
+                    ),
+                    Icon(
+                      Icons.add,
+                      color: Colors.indigo.shade800,
+                      size: 20,
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
           title: Text(
             "Sales",
             style: GoogleFonts.inter(color: Colors.white),
@@ -95,6 +129,8 @@ class _SaleViewState extends State<SaleView> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => EditSale(
+                                      totalAmountReceived: snapshot
+                                          .data?.docs[index]['amountRecevied'],
                                       orderNumber: snapshot.data?.docs[index]
                                           ['orderNumber'],
                                       totaldiscount: snapshot.data?.docs[index]

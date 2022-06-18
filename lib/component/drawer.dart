@@ -33,7 +33,7 @@ class _CDrawerState extends State<CDrawer> {
         children: [
           Container(
               width: double.maxFinite,
-              decoration: BoxDecoration(color: Colors.blue.shade700),
+              decoration: BoxDecoration(color: Colors.indigo.shade700),
               padding: const EdgeInsets.only(
                   left: 20, right: 25, bottom: 25, top: 35),
               child: Row(
