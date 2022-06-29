@@ -1,3 +1,5 @@
+import 'package:cafe_books/component/usnackbar.dart';
+import 'package:cafe_books/datautil/expensedatavoucher.dart';
 import 'package:cafe_books/screens/expense/expenseVoucher/editexpensevoucheritem.dart';
 import 'package:cafe_books/screens/expense/expenseVoucher/expenseitem.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,16 +9,22 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
-import '../homepage/homepage.dart';
+import '../../homepage/homepage.dart';
 
-class ExpenseVoucer extends StatefulWidget {
-  ExpenseVoucer({Key? key}) : super(key: key);
+class EditExpenseVoucer extends StatefulWidget {
+  DateTime date;
+  int? voucherNumber;
+  String? id;
+  List<ExpenseItems>? list;
+  EditExpenseVoucer(
+      {Key? key, required this.date, this.voucherNumber, this.list, this.id})
+      : super(key: key);
 
   @override
-  State<ExpenseVoucer> createState() => _ExpenseVoucerState();
+  State<EditExpenseVoucer> createState() => _ExpenseVoucerState();
 }
 
-class _ExpenseVoucerState extends State<ExpenseVoucer> {
+class _ExpenseVoucerState extends State<EditExpenseVoucer> {
   final dateFormat = DateFormat("dd - MMMM - yyyy");
   DateTime _dateTime = DateTime.now();
   String _date = "";
@@ -24,11 +32,11 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
   @override
   void initState() {
     setState(() {
-      _date = dateFormat.format(_dateTime);
-      expenseVoucherList.clear();
+      _date = dateFormat.format(widget.date);
+      expenseVoucherList = widget.list!;
+      expenseNumber = widget.voucherNumber!;
     });
     updateTotal();
-    updateExpenseNumber();
     super.initState();
   }
 
@@ -39,17 +47,17 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
       .collection("sales");
 
   Future updateExpenseNumber() async {
-    QuerySnapshot expenseNum =
-        await _expCollection.where("voucherType", isEqualTo: "Expense").get();
-    expenseNum.docs.forEach((e) {
-      setState(() {
-        expenseNumber = e['voucherNumber'] + 1;
-      });
+    QuerySnapshot _expenseNumber = await _expCollection
+        .where("voucherType", isEqualTo: "Expense")
+        .orderBy("voucherNumber")
+        .get();
+    setState(() {
+      expenseNumber = _expenseNumber.docs.length + 1;
     });
   }
 
   Future saveData() async {
-    _expCollection.doc().set({
+    _expCollection.doc(widget.id).update({
       "voucherType": "Expense",
       "date": _dateTime,
       "expenseAmount": totalAmount,
@@ -290,13 +298,19 @@ class _ExpenseVoucerState extends State<ExpenseVoucer> {
                   height: 60,
                   child: TextButton(
                     child: Text(
-                      "Save & New",
+                      "Delete",
                       style: GoogleFonts.inter(),
                     ),
                     onPressed: () {
-                      saveData().then((value) {
-                        expenseVoucherList.clear();
-                        updateExpenseNumber();
+                      saveData().then((value) async {
+                        await _expCollection
+                            .doc(widget.id)
+                            .delete()
+                            .then((value) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              USnackbar(message: "Voucher Deleted"));
+                        });
                       });
                     },
                   ),

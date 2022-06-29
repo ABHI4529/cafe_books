@@ -82,8 +82,10 @@ class completedorder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream:
-          saleCollection.where("orderCompleted", isEqualTo: true).snapshots(),
+      stream: saleCollection
+          .where("orderCompleted", isEqualTo: true)
+          .where("voucherType", isEqualTo: "Sale")
+          .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -192,8 +194,10 @@ class pendingorder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream:
-          saleCollection.where("orderCompleted", isEqualTo: false).snapshots(),
+      stream: saleCollection
+          .where("orderCompleted", isEqualTo: false)
+          .where("voucherType", isEqualTo: "Sale")
+          .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());

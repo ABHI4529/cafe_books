@@ -171,23 +171,7 @@ class _AddExpenseItemState extends State<AddExpenseItem> {
                         style: ElevatedButton.styleFrom(
                             primary: const Color(0xff1A659E)),
                         onPressed: () {
-                          setState(() {
-                            if (expenseVoucherList.contains(ExpenseItems(
-                                widget.itemName,
-                                int.parse(_quantityController.text),
-                                double.parse(_priceController.text),
-                                _descriptionController.text))) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  USnackbar(
-                                      message: "Already Contains that item"));
-                            } else {
-                              expenseVoucherList.add(ExpenseItems(
-                                  widget.itemName,
-                                  int.parse(_quantityController.text),
-                                  double.parse(_priceController.text),
-                                  _descriptionController.text));
-                            }
-                          });
+                          setState(() {});
                         },
                         child: Text("Add", style: GoogleFonts.inter())),
                   )

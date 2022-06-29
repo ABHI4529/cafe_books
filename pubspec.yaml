@@ -40,6 +40,7 @@ dependencies:
   firebase_auth: ^3.3.19
   google_sign_in: ^5.3.2
   searchfield: ^0.6.5
+  fl_chart: ^0.55.0
   provider: ^6.0.3
 
 dev_dependencies:

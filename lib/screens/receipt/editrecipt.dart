@@ -1,5 +1,7 @@
 import 'package:cafe_books/component/ctextfield.dart';
+import 'package:cafe_books/component/usnackbar.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
+import 'package:cafe_books/screens/reports/subreports/ledgerReport/ledger_report.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +14,32 @@ import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 import '../clients/addclient.dart';
 import '../sale/sale.dart';
 
-class Receipt extends StatefulWidget {
-  Receipt({Key? key}) : super(key: key);
+class EditReceipt extends StatefulWidget {
+  int? receiptNo;
+  DateTime? date;
+  String? customerName;
+  String? customerContact;
+  double? recAmount;
+  String? description;
+  String? paymentValue;
+  String? voucherId;
+  EditReceipt(
+      {Key? key,
+      this.voucherId,
+      this.customerContact,
+      this.recAmount,
+      this.receiptNo,
+      this.paymentValue,
+      this.description,
+      this.date,
+      this.customerName})
+      : super(key: key);
 
   @override
-  State<Receipt> createState() => _ReceiptState();
+  State<EditReceipt> createState() => _EditReceiptState();
 }
 
-class _ReceiptState extends State<Receipt> {
+class _EditReceiptState extends State<EditReceipt> {
   double top = -500;
   double width = 0;
   int receiptNumber = 1;
@@ -63,7 +83,7 @@ class _ReceiptState extends State<Receipt> {
   final descriptionController = TextEditingController();
 
   Future saveRecipt() async {
-    receiptCollection.doc().set({
+    receiptCollection.doc(widget.voucherId!).update({
       "customerName": voucherCustomerName.text,
       "customerContact": voucherCustomerContact.text,
       "date": voucherDateFull,
@@ -78,13 +98,31 @@ class _ReceiptState extends State<Receipt> {
   @override
   void initState() {
     updateReceipt();
+    setState(() {
+      receiptNumber = widget.receiptNo!;
+      voucherCustomerName.text = widget.customerName!;
+      voucherCustomerContact.text = widget.customerContact!;
+      voucherDateFull = widget.date!;
+      receivedController.text = widget.recAmount!.toString();
+      paymentvalue = widget.paymentValue!;
+      descriptionController.text = widget.description!;
+    });
     super.initState();
   }
 
-  Future updateClosingBal(String clientID, double existingCl) async {
+  Future addupdateClosingBal(String clientID, double existingCl) async {
+    clientCollectionRef.doc(clientID).update(
+        {"closing": existingCl + double.parse(widget.recAmount.toString())});
+  }
+
+  Future subupdateClosingBal(String clientID, double existingCl) async {
     clientCollectionRef
         .doc(clientID)
         .update({"closing": existingCl - double.parse(receivedAmount)});
+  }
+
+  Future deleteVoucher() async {
+    receiptCollection.doc(widget.voucherId).delete();
   }
 
   @override
@@ -534,20 +572,17 @@ class _ReceiptState extends State<Receipt> {
                   height: 60,
                   child: TextButton(
                     onPressed: () {
-                      saveRecipt().then((value) {
-                        updateClosingBal(_clientID, existingCl);
-                        setState(() {
-                          voucherCustomerName.clear();
-                          voucherCustomerContact.clear();
-                          receivedController.clear();
-                          receivedAmount = "";
+                      deleteVoucher().then((value) {
+                        addupdateClosingBal(universalClientId, existingCl)
+                            .then((value) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              USnackbar(message: "Voucher Deleted"));
                         });
-                        voucherclientNameNode.requestFocus();
-                        updateReceipt();
                       });
                     },
                     child: Text(
-                      "Save & New",
+                      "Delete",
                       style: GoogleFonts.inter(),
                     ),
                   ),
@@ -563,7 +598,7 @@ class _ReceiptState extends State<Receipt> {
                             borderRadius: BorderRadius.circular(0))),
                     onPressed: () {
                       saveRecipt().then((value) {
-                        updateClosingBal(_clientID, existingCl);
+                        subupdateClosingBal(_clientID, existingCl);
                         setState(() {
                           voucherCustomerName.clear();
                           voucherCustomerContact.clear();
@@ -573,10 +608,14 @@ class _ReceiptState extends State<Receipt> {
                         voucherclientNameNode.requestFocus();
                         updateReceipt();
                         Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(USnackbar(
+                          message: "Voucher Update",
+                          color: Colors.indigo.shade700,
+                        ));
                       });
                     },
                     child: Text(
-                      "Save",
+                      "Update",
                       style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -588,9 +627,8 @@ class _ReceiptState extends State<Receipt> {
                   icon: const Icon(Icons.whatsapp),
                   onPressed: () {
                     saveRecipt().then((value) async {
-                      updateClosingBal(_clientID, existingCl);
+                      subupdateClosingBal(_clientID, existingCl);
                       updateReceipt();
-
                       String istring =
                           "Amount Recieved : ${receivedController.text}";
                       String whatsapptext =

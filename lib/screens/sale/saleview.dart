@@ -19,11 +19,6 @@ class SaleView extends StatefulWidget {
   State<SaleView> createState() => _SaleViewState();
 }
 
-final saleCollectionRef = FirebaseFirestore.instance
-    .collection("book_data")
-    .doc("$userEmail")
-    .collection("sales");
-
 class _SaleViewState extends State<SaleView> {
   DateFormat dateformat = DateFormat("dd - MMMM - yyyy");
   @override
@@ -77,7 +72,9 @@ class _SaleViewState extends State<SaleView> {
             style: GoogleFonts.inter(color: Colors.white),
           )),
       body: StreamBuilder(
-          stream: saleCollection.snapshots(),
+          stream: saleCollection
+              .where("voucherType", isEqualTo: "Sale")
+              .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -205,6 +202,15 @@ class _SaleViewState extends State<SaleView> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         EditSale(
+                                                          totalAmountReceived:
+                                                              snapshot.data
+                                                                          ?.docs[
+                                                                      index][
+                                                                  'amountRecevied'],
+                                                          orderNumber: snapshot
+                                                                  .data
+                                                                  ?.docs[index]
+                                                              ['orderNumber'],
                                                           totaldiscount: snapshot
                                                                   .data
                                                                   ?.docs[index]

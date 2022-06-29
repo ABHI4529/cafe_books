@@ -1,13 +1,19 @@
+import 'dart:developer';
+
 import 'package:cafe_books/component/usnackbar.dart';
+import 'package:cafe_books/datautil/expensedatavoucher.dart';
 import 'package:cafe_books/screens/expense/addexpense.dart';
 import 'package:cafe_books/screens/expense/editexpense.dart';
+import 'package:cafe_books/screens/expense/expenseVoucher/editexpensevoucher.dart';
 import 'package:cafe_books/screens/expense/expensevoucher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
+import '../homepage/homepage.dart';
 import '../items/additem.dart';
 
 class Expense extends StatefulWidget {
@@ -18,6 +24,11 @@ class Expense extends StatefulWidget {
 }
 
 class _ExpenseState extends State<Expense> {
+  final _collectionRef = FirebaseFirestore.instance
+      .collection("book_data")
+      .doc("${user?.email}")
+      .collection("sales")
+      .where("voucherType", isEqualTo: "Expense");
   PageController pageController = PageController();
   Color textColor1 = Colors.blue.shade700;
   Color textColor2 = Colors.grey;
@@ -135,7 +146,79 @@ class _ExpenseState extends State<Expense> {
               },
               controller: pageController,
               children: [
-                Container(),
+                StreamBuilder(
+                    stream: _collectionRef.snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: snapshot.data?.docs.length,
+                        itemBuilder: (context, index) {
+                          Timestamp tm = snapshot.data!.docs[index]['date'];
+                          DateFormat dt = DateFormat("d - MMMM - yyyy");
+                          return GestureDetector(
+                            onTap: () {
+                              List item = snapshot.data?.docs[index]['items'];
+                              List<ExpenseItems> itemList =
+                                  List<ExpenseItems>.from(item
+                                      .map((e) => ExpenseItems.fromJson(e)));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditExpenseVoucer(
+                                          date: tm.toDate(),
+                                          list: itemList,
+                                          id: snapshot.data?.docs[index].id,
+                                          voucherNumber: snapshot.data
+                                              ?.docs[index]['voucherNumber'])));
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color:
+                                      Colors.indigo.shade700.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Exp No. # ${snapshot.data!.docs[index]['voucherNumber']}",
+                                        style: GoogleFonts.inter(
+                                            color: Colors.white),
+                                      ),
+                                      Text(
+                                        dt.format(tm.toDate()),
+                                        style: GoogleFonts.inter(
+                                            color: Colors.white),
+                                      )
+                                    ],
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    child: Text(
+                                      "₹ ${snapshot.data!.docs[index]['expenseAmount']}",
+                                      style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }),
                 StreamBuilder(
                   stream: expenseCollectionRef.snapshots(),
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {

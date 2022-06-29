@@ -32,13 +32,13 @@ class EditSale extends StatefulWidget {
   double? totalAmountReceived;
   DateTime voucherDate;
   double? totaldiscount;
-  int? orderNumber;
+  int orderNumber;
   String? value;
   EditSale(
       {Key? key,
       required this.edititems,
       this.voucherSaleNumber,
-      this.orderNumber,
+      required this.orderNumber,
       required this.voucherDate,
       this.value,
       this.totaldiscount,
@@ -100,7 +100,7 @@ class _EditSaleState extends State<EditSale> {
       totaldiscountlist.clear();
       totalsubamount.clear();
       _totalamountreceived.text = widget.totalAmountReceived.toString();
-      _orderNumber = widget.orderNumber!;
+      _orderNumber = widget.orderNumber;
     });
     updateTotal();
     super.initState();
@@ -148,7 +148,7 @@ class _EditSaleState extends State<EditSale> {
   }
 
   Future saveBill() async {
-    saleCollection.doc(widget.docid).set({
+    saleCollection.doc(widget.docid).update({
       "customerName": voucherCustomerName.text,
       "saleNumber": saleNumber,
       "orderCompleted": false,
@@ -156,6 +156,7 @@ class _EditSaleState extends State<EditSale> {
       "paymentMethod": paymentvalue,
       "amountRecevied": double.parse(_totalamountreceived.text),
       "date": voucherDateFull,
+      "voucherType": "Sale",
       "orderNumber": _orderNumber,
       "discount": double.parse(voucherDiscountControler.text),
       "totalSale": totalamount,

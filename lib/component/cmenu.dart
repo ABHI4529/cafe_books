@@ -2,8 +2,11 @@ import 'dart:ffi';
 
 import 'package:cafe_books/screens/clients/addclient.dart';
 import 'package:cafe_books/screens/expense/addexpense.dart';
+import 'package:cafe_books/screens/expense/expensevoucher.dart';
 import 'package:cafe_books/screens/items/additem.dart';
 import 'package:cafe_books/screens/items/items.dart';
+import 'package:cafe_books/screens/stock/stocktransactions.dart';
+import 'package:cafe_books/screens/stock/voucherstock.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -35,8 +38,8 @@ class _CMenuState extends State<CMenu> with TickerProviderStateMixin {
           });
         }
       },
-      fabColor: Colors.blue.shade700,
-      ringColor: Colors.blue.shade700,
+      fabColor: Colors.indigo.shade700,
+      ringColor: Colors.indigo.shade700,
       fabChild: icon,
       children: [
         TextButton(
@@ -50,8 +53,8 @@ class _CMenuState extends State<CMenu> with TickerProviderStateMixin {
         ),
         TextButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => AddExpense()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ExpenseVoucer()));
           },
           child: Text(
             "Expense",
@@ -60,9 +63,12 @@ class _CMenuState extends State<CMenu> with TickerProviderStateMixin {
           ),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => StockTransaction()));
+          },
           child: Text(
-            "Purchase",
+            "Stock",
             style: GoogleFonts.inter(
                 color: Colors.white, fontWeight: FontWeight.bold),
           ),

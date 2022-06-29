@@ -130,11 +130,18 @@ class _SaleState extends State<Sale> {
     Timestamp tTo = Timestamp.fromDate(now);
     QuerySnapshot orderNumber = await saleCollection
         .where("date", isLessThan: tTo, isGreaterThan: tFrom)
+        .where("voucherType", isEqualTo: "Sale")
         .get();
-    setState(() {
-      saleNumber = snap.docs.length + 1;
-      _orderNumber = orderNumber.docs.length + 1;
-    });
+    QuerySnapshot saleNum =
+        await saleCollection.where("voucherType", isEqualTo: "Sale").get();
+    for (var element in orderNumber.docs) {
+      _orderNumber = element['orderNumber'] + 1;
+    }
+    for (var element in saleNum.docs) {
+      setState(() {
+        saleNumber = element['saleNumber'] + 1;
+      });
+    }
   }
 
   String _clientID = "";
@@ -157,6 +164,7 @@ class _SaleState extends State<Sale> {
       "paymentMethod": paymentvalue,
       "date": voucherDateFull,
       "orderNumber": _orderNumber,
+      "voucherType": "Sale",
       "discount": double.parse(voucherDiscountControler.text),
       "totalSale": totalamount,
       "Items": itemList.map((e) => e.toJson()).toList()
@@ -196,7 +204,9 @@ class _SaleState extends State<Sale> {
                 children: [
                   Expanded(
                       child: StreamBuilder(
-                          stream: saleCollection.snapshots(),
+                          stream: saleCollection
+                              .where("voucherType", isEqualTo: "Sale")
+                              .snapshots(),
                           builder:
                               (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                             return TextButton(
