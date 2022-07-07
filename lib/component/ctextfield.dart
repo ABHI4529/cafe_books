@@ -9,6 +9,7 @@ class CTextField<T> extends StatefulWidget {
   Widget? widgetPrefix;
   int? maxline;
   Widget? prefix;
+  bool obscure = false;
   ValueChanged<String>? onTextChanged;
   final Function(String)? onSubmit;
   CTextField(
@@ -16,6 +17,7 @@ class CTextField<T> extends StatefulWidget {
       this.maxline,
       this.focus,
       this.prefix,
+      this.obscure = false,
       this.placeholder,
       this.onTextChanged,
       this.controller,
@@ -48,6 +50,7 @@ class _CTextFieldState extends State<CTextField> {
           }
         },
         child: TextFormField(
+          obscureText: widget.obscure,
           onChanged: widget.onTextChanged,
           focusNode: widget.focus,
           keyboardType: widget.textInputType,

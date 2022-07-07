@@ -1,3 +1,4 @@
+import 'package:cafe_books/screens/reports/expenseReport.dart';
 import 'package:cafe_books/screens/reports/profitloss.dart';
 import 'package:cafe_books/screens/reports/salereport.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,10 @@ class _ReportState extends State<Report> {
             trailing: const Icon(FontAwesomeIcons.fileWaveform),
           ),
           ListTile(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ExpenseReport()));
+            },
             title: Text(
               "Expense Report",
               style: GoogleFonts.inter(),

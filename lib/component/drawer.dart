@@ -7,6 +7,7 @@ import 'package:cafe_books/screens/items/items.dart';
 import 'package:cafe_books/screens/kitchen/kitchen.dart';
 import 'package:cafe_books/screens/reports/report.dart';
 import 'package:cafe_books/screens/sale/saleview.dart';
+import 'package:cafe_books/screens/users/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,22 +64,30 @@ class _CDrawerState extends State<CDrawer> {
                           style: GoogleFonts.inter(
                               color: Colors.white, fontSize: 10),
                         ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "User Settings  ",
-                                style: GoogleFonts.inter(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                              const Icon(
-                                FontAwesomeIcons.chevronDown,
-                                size: 13,
-                                color: Colors.white,
-                              )
-                            ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UserSettings()));
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "User Settings  ",
+                                  style: GoogleFonts.inter(
+                                      color: Colors.white, fontSize: 12),
+                                ),
+                                const Icon(
+                                  FontAwesomeIcons.chevronDown,
+                                  size: 13,
+                                  color: Colors.white,
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],

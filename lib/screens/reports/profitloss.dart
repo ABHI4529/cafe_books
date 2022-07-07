@@ -33,31 +33,31 @@ class _ProfitLossState extends State<ProfitLoss> {
       .doc("${user?.email}")
       .collection('stockTranscation');
 
-  @override
-  void initState() {
-    getProft();
-    super.initState();
-  }
-
   Future getProft() async {
-    QuerySnapshot saleData =
-        await allCollection.where("voucherType", isEqualTo: "Sale").get();
-    QuerySnapshot expenseData =
-        await allCollection.where("voucherType", isEqualTo: "Expense").get();
-    QuerySnapshot stockData =
-        await stockCollection.where("purchase", isEqualTo: true).get();
+    QuerySnapshot saleData = await allCollection
+        .where("voucherType", isEqualTo: "Sale")
+        .where("date", isGreaterThanOrEqualTo: dt)
+        .get();
+    QuerySnapshot expenseData = await allCollection
+        .where("voucherType", isEqualTo: "Expense")
+        .where("date", isGreaterThanOrEqualTo: dt)
+        .get();
+    QuerySnapshot stockData = await stockCollection
+        .where("purchase", isEqualTo: true)
+        .where("date", isGreaterThanOrEqualTo: dt)
+        .get();
     List<double> _totalSale = [];
     List<double> _totalExpense = [];
     List<double> _totalStock = [];
-    saleData.docs.forEach((e) {
+    for (var e in saleData.docs) {
       _totalSale.add(e['totalSale']);
-    });
-    expenseData.docs.forEach((e) {
+    }
+    for (var e in expenseData.docs) {
       _totalExpense.add(e['expenseAmount']);
-    });
-    stockData.docs.forEach((e) {
+    }
+    for (var e in stockData.docs) {
       _totalStock.add(e['total']);
-    });
+    }
     setState(() {
       _totalProfit = _totalSale.sum - (_totalExpense.sum + _totalStock.sum);
     });
@@ -69,6 +69,16 @@ class _ProfitLossState extends State<ProfitLoss> {
   Timestamp tTo = Timestamp.now();
   DateFormat dateFor = DateFormat("dd/MM/yyyy");
   DateFormat dateFormat = DateFormat('d - MMMM - yyyy');
+
+  @override
+  void initState() {
+    setState(() {
+      dt = DateTime(dfrom.year, dfrom.month);
+    });
+    getProft();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,13 +107,11 @@ class _ProfitLossState extends State<ProfitLoss> {
               onPressed: () async {
                 DateTimeRange date = await showDateRangePicker(
                     context: context,
-                    firstDate: DateTime(2001),
+                    firstDate: DateTime(2014),
                     lastDate: DateTime(2023)) as DateTimeRange;
                 setState(() {
                   dt = date.start;
-                  dfrom = date.end;
-                  tFrom = Timestamp.fromDate(date.start);
-                  tTo = Timestamp.fromDate(date.end);
+                  getProft();
                 });
               },
               child: Text(
@@ -114,8 +122,78 @@ class _ProfitLossState extends State<ProfitLoss> {
             ),
           ),
           SaleCard(),
-          const ExpenseCard(),
-          StockCard(stockCollection: stockCollection, dateFormat: dateFormat)
+          ExpenseCard(),
+          StreamBuilder(
+              stream: stockCollection
+                  .where("purchase", isEqualTo: true)
+                  .where("stockDate", isGreaterThanOrEqualTo: dt)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  List<double> _totalsale = [];
+                  for (var e in snapshot.data!.docs) {
+                    _totalsale.add(e['total']);
+                  }
+                  return ExpansionTile(
+                    title: Text(
+                      "Stock Purchases",
+                      style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                    ),
+                    trailing: Text(
+                      "₹ ${_totalsale.sum}",
+                      style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                    ),
+                    children: snapshot.data!.docs.map((e) {
+                      Timestamp tm = e['stockDate'];
+                      DateTime dt = tm.toDate();
+                      return Container(
+                        width: double.maxFinite,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.grey.withOpacity(0.4),
+                                  blurRadius: 3)
+                            ]),
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Stock No. # ${e['stockTrn']}",
+                                  style: GoogleFonts.inter(),
+                                ),
+                                Text(
+                                  dateFormat.format(dt),
+                                  style: GoogleFonts.inter(),
+                                )
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                "₹ ${e['total']}",
+                                style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              }),
+          Container(
+            height: 100,
+          )
         ],
       )),
       bottomSheet: BottomAppBar(
@@ -135,176 +213,11 @@ class _ProfitLossState extends State<ProfitLoss> {
     );
   }
 
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> SaleCard() {
-    return StreamBuilder(
-        stream:
-            saleCollection.where("voucherType", isEqualTo: "Sale").snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasData) {
-            List<double> _totalsale = [];
-            for (var e in snapshot.data!.docs) {
-              _totalsale.add(e['totalSale']);
-            }
-            return ExpansionTile(
-                title: Text(
-                  "Total Sale",
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-                ),
-                trailing: Text(
-                  "₹ ${_totalsale.sum}",
-                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-                ),
-                children: snapshot.data!.docs.map((e) {
-                  Timestamp tm = e['date'];
-                  DateTime dt = tm.toDate();
-                  return Container(
-                      width: double.maxFinite,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.4),
-                                blurRadius: 3)
-                          ]),
-                      padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Sale No. # ${e['saleNumber']}",
-                                style: GoogleFonts.inter(),
-                              ),
-                              Text(
-                                dateFormat.format(dt),
-                                style: GoogleFonts.inter(),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
-                                child: Text(
-                                  "${e['customerName']}",
-                                  style: GoogleFonts.inter(),
-                                ),
-                              ),
-                              Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
-                                child: Text(
-                                  "₹ ${e['totalSale']}",
-                                  style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ));
-                }).toList());
-          }
-          return const Center(child: CircularProgressIndicator());
-        });
-  }
-}
-
-class StockCard extends StatelessWidget {
-  const StockCard({
-    Key? key,
-    required this.stockCollection,
-    required this.dateFormat,
-  }) : super(key: key);
-
-  final CollectionReference<Map<String, dynamic>> stockCollection;
-  final DateFormat dateFormat;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: stockCollection.where("purchase", isEqualTo: true).snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasData) {
-            List<double> _totalsale = [];
-            for (var e in snapshot.data!.docs) {
-              _totalsale.add(e['total']);
-            }
-            return ExpansionTile(
-              title: Text(
-                "Stock Purchases",
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-              ),
-              trailing: Text(
-                "₹ ${_totalsale.sum}",
-                style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-              ),
-              children: snapshot.data!.docs.map((e) {
-                Timestamp tm = e['stockDate'];
-                DateTime dt = tm.toDate();
-                return Container(
-                  width: double.maxFinite,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey.withOpacity(0.4), blurRadius: 3)
-                      ]),
-                  padding: const EdgeInsets.all(10),
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Stock No. # ${e['stockTrn']}",
-                            style: GoogleFonts.inter(),
-                          ),
-                          Text(
-                            dateFormat.format(dt),
-                            style: GoogleFonts.inter(),
-                          )
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: Text(
-                          "₹ ${e['total']}",
-                          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              }).toList(),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        });
-  }
-}
-
-class ExpenseCard extends StatelessWidget {
-  const ExpenseCard({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> ExpenseCard() {
     return StreamBuilder(
         stream: saleCollection
             .where("voucherType", isEqualTo: "Expense")
+            .where("date", isGreaterThanOrEqualTo: dt)
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
@@ -381,6 +294,89 @@ class ExpenseCard extends StatelessWidget {
                 );
               }).toList(),
             );
+          }
+          return const Center(child: CircularProgressIndicator());
+        });
+  }
+
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> SaleCard() {
+    return StreamBuilder(
+        stream: saleCollection
+            .where("voucherType", isEqualTo: "Sale")
+            .where("date", isGreaterThanOrEqualTo: dt)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            List<double> _totalsale = [];
+            for (var e in snapshot.data!.docs) {
+              _totalsale.add(e['totalSale']);
+            }
+            return ExpansionTile(
+                title: Text(
+                  "Total Sale",
+                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                ),
+                trailing: Text(
+                  "₹ ${_totalsale.sum}",
+                  style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                ),
+                children: snapshot.data!.docs.map((e) {
+                  Timestamp tm = e['date'];
+                  DateTime dt = tm.toDate();
+                  return Container(
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.4),
+                                blurRadius: 3)
+                          ]),
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Sale No. # ${e['saleNumber']}",
+                                style: GoogleFonts.inter(),
+                              ),
+                              Text(
+                                dateFormat.format(dt),
+                                style: GoogleFonts.inter(),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                child: Text(
+                                  "${e['customerName']}",
+                                  style: GoogleFonts.inter(),
+                                ),
+                              ),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                child: Text(
+                                  "₹ ${e['totalSale']}",
+                                  style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ));
+                }).toList());
           }
           return const Center(child: CircularProgressIndicator());
         });

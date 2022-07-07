@@ -3,6 +3,7 @@ import 'package:cafe_books/component/usnackbar.dart';
 import 'package:cafe_books/firebase_options.dart';
 import 'package:cafe_books/screens/auth/social-auth.dart';
 import 'package:cafe_books/screens/homepage/homepage.dart';
+import 'package:cafe_books/screens/users/userScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,11 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   var user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +205,7 @@ class _LoginState extends State<Login> {
         )),
       );
     } else {
-      return HomePage();
+      return const HomePage();
     }
   }
 }

@@ -11,8 +11,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_time_patterns.dart';
 import 'package:collection/collection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../component/selectclip.dart';
+import '../users/userScreen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -32,12 +34,23 @@ class _HomePageState extends State<HomePage> {
   DateTime df = DateTime.now();
   Timestamp tfrom = Timestamp.now();
   Timestamp tTo = Timestamp.now();
+  Future loadUser() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    final user = sharedPreferences.getBool("user");
+    if (user!) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => UserScreen()));
+    } else {
+      null;
+    }
+  }
 
   @override
   void initState() {
     setState(() {
       tTo = Timestamp.fromDate(DateTime(df.year, df.month, df.day));
     });
+    loadUser();
     super.initState();
   }
 

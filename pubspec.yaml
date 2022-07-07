@@ -42,6 +42,7 @@ dependencies:
   searchfield: ^0.6.5
   fl_chart: ^0.55.0
   provider: ^6.0.3
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
