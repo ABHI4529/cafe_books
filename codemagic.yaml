@@ -5,5 +5,3 @@ workflows:
     max_build_duration: 60
     environment:
       flutter: 3.0.4
-    scripts:
-      - name: Debug for iOS
